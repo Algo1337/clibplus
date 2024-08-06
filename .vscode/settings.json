@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "str.h": "c",
+        "malloc.h": "c",
+        "global_memory.h": "c"
+    }
+}

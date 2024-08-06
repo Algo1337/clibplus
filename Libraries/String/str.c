@@ -1,0 +1,261 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdarg.h>
+
+#include "str.h"
+
+str *string(const char *data) {
+    str *s = (str *)malloc(sizeof(str));
+
+    if(data)
+        s->data = strdup(data);
+        
+    s->Utils = __Utils;
+}
+
+
+void *__Utils(str *s, strTools mode, ...) {
+    int first = 1, sec = 2;
+	va_list args;
+    va_start(args, sec);
+
+	switch(mode) {
+		case _STRIP:            { return (void *)__Strip(s); }
+		case _TRIM:             { return (void *)__Trim(s, get_va_arg_char(args)); }
+		case _COUNTCHAR:        { return (void *)__CountChar(s, get_va_arg_char(args)); }
+		case _COUNTSTR:         { return (void *)__CountSubstr(s, get_va_arg_str(args)); }
+		case _STARTSWITH:       { return (void *)__StartsWith(s, get_va_arg_str(args)); }
+		case _ENDSWITH:         { return (void *)__EndsWith(s, get_va_arg_str(args)); }
+        case _ISUPPERCASE:      { return (void *)__IsUppercase(s); }
+		case _ISLOWERCASE:      { return (void *)__IsLowercase(s); }
+        case _TOUPPERCASE:      { return (void *)__ToUppercase(s); }
+        case _TOLOWERCASE:      { return (void *)__ToLowercase(s); }
+        // case _SPLIT:            { return (void *)__SplitChar(s, get_va_arg_char(args)); }
+        case _REPLACE:          { 
+            char *find = get_va_arg_str(args);
+            char *replace = get_va_arg_str(args);
+            return (void *)__Replace(s, find, replace); 
+        }
+        // case _GETSUBSTRBYCHAR:  { return (void *)__get_substr(s, get_va_arg_char(args), get_va_arg_char(args)); }
+        // case _RMCHAR:           { return (void *)__RmChar(s, get_va_arg_char(args)); }
+	}
+
+    va_end(args);
+	return 0;
+}
+
+long __Strip(str *s) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    char *buffer = (char *)alloc(strlen(s->data) + 1);
+    
+    int start = 0;
+    while(s->data[start] != '\0')
+        if(isspace(s->data[start]))
+            start++;
+        else
+            break;
+
+    int end = strlen(s->data) - 1;
+    while(s->data[end] != '\0')
+        if(isspace(s->data[end]))
+            end--;
+        else
+            break;
+
+    for(int i = start; i < end + 1; i++)
+        strncat(buffer, &s->data[i], sizeof(char));
+
+    s->data = strdup(buffer);
+    free(buffer);
+
+    return (start > 0 && end < strlen(s->data) ? 1 : 0);
+}
+
+long __Trim(str *s, const char delim) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    char *buffer = (char *)alloc(strlen(s->data) + 1);
+    
+    for(int i = 0; i < strlen(s->data); i++)
+        if(s->data[i] != delim)
+            strncat(buffer, &s->data[i], sizeof(char));
+
+    int modify_chk = strlen(buffer) < strlen(s->data) ? 1 : 0;
+    s->data = strdup(buffer);
+    free(buffer);
+
+    return modify_chk;
+}
+
+long __CountChar(str *s, const char ch) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    long count = 0;
+    for(int i = 0; i < strlen(s->data); i++)
+        if(s->data[i] == ch)
+            count++;
+
+    return count;
+}
+
+long __CountSubstr(str *s, const char *substr) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    long count = 0;
+    if(strlen(substr) < 2) 
+        return 0;
+
+    for(int i = 0; i < strlen(s->data); i++)
+        if(s->data[i] == substr[0] && s->data[ i + strlen(substr)-1 ] == substr[strlen(substr) - 1])
+            count++;
+
+    return count;
+}
+
+long __StartsWith(str *s, const char *str) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    if(strlen(str) < 2) 
+        return 0;
+
+    long count = 0;
+    for(int i = 0; i < strlen(str); i++)
+        if(s->data[i] == str[i])
+            count++;
+    
+    return (count == strlen(str) ? 1 : 0);
+}
+
+long __EndsWith(str *s, const char *str) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    if(strlen(str) < 1)
+        return 0;
+
+    long count = 0;
+    for(int i = strlen(s->data) - strlen(str); i < strlen(s->data); i++)
+        if(s->data[i] == str[count])
+            count++;
+
+    return (count == strlen(str) ? 1 : 0);
+}
+
+long __IsUppercase(str *s) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    for(int i = 0; i < strlen(s->data) - 1; i++)
+        if(!isupper(s->data[i]))
+            return 0;
+
+    return 1;
+}
+
+long __IsLowercase(str *s) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    for(int i = 0; i < strlen(s->data) - 1; i++)
+        if(!islower(s->data[i]))
+            return 0;
+
+    return 1;
+}
+
+long __ToUppercase(str *s) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    char *buffer = (char *)alloc(strlen(s->data) + 1);
+    long chk = 0;
+
+    for(int i = 0; i < strlen(s->data); i++) {
+        if(isalpha(s->data[i]) && !isupper(s->data[i])) {
+            chk++;
+            char byte = toupper(s->data[i]);
+            strncat(buffer, &byte, sizeof(char));
+            continue;
+        }
+
+        strncat(buffer, &s->data[i], sizeof(char));
+    }
+
+    s->data = strdup(buffer);
+    free(buffer);
+
+    return chk;
+}
+
+long __ToLowercase(str *s) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    char *buffer = (char *)alloc(strlen(s->data) + 1);
+    long chk = 0;
+
+    for(int i = 0; i < strlen(s->data); i++) {
+        if(isalpha(s->data[i]) && !islower(s->data[i])) {
+            chk++;
+            char byte = tolower(s->data[i]);
+            strncat(buffer, &byte, sizeof(char));
+            continue;
+        }
+
+        strncat(buffer, &s->data[i], sizeof(char));
+    }
+
+    s->data = strdup(buffer);
+    free(buffer);
+
+    return chk;
+}
+
+long __Replace(str *s, char *find, char *replacement) {
+    long sz = strlen(s->data);
+    if(strlen(replacement) > strlen(find))
+        sz = strlen(s->data) + (strlen(replacement) - strlen(find));
+
+    char *buffer = (char *)alloc(sz);
+
+    for(int i = 0; i < strlen(s->data); i++) {
+        if(s->data[i] == find[0]) {
+            int ch_count = 0;
+            for(int start = i; start < strlen(find); start++) {
+                // Match all Characters
+                if(s->data[start] == find[ch_count])
+                    ch_count++;
+
+                // Append replacement and adjust i
+                if(ch_count == strlen(find)) {
+                    strncat(buffer, replacement, strlen(replacement));
+                    i += strlen(find);
+                }
+            }
+        }
+        strncat(buffer, &s->data[i], sizeof(char));
+    }
+
+    s->data = strdup(buffer);
+    free(buffer);
+
+    return 1;
+}
+
+static char *get_va_arg_str(va_list a) {
+	char *arg = (char *)va_arg(a, char*);
+	return  arg;
+}
+
+static char get_va_arg_char(va_list a) {
+	char arg = (char)va_arg(a, int);
+	return arg;
+}

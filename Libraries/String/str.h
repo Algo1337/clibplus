@@ -94,9 +94,20 @@ long    __ToUppercase(str *s);
 //
 long            __ToLowercase(str *s);
 
+//
+//              Replace a Substring
+//
 long            __Replace(str *s, char *find, char *replace);
+
+//
+//              Split a string
+//
 char            **__SplitChar(str *s, const char delim);
 
+
+//
+//              Append all element in the array provided to string with the delim between each
+//
 void            *__Join(str *s, const char **arr, const char delim);
 
 static char     **get_va_args_dptr_str(va_list a);

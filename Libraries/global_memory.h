@@ -3,6 +3,6 @@
 
 // global_memory
 void *alloc(long mem_sz);
-void **AllocateDChar(long mem_sz);
+void **alloc2(long mem_sz);
 
 #endif

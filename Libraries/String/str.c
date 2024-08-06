@@ -33,10 +33,16 @@ void *__Utils(str *s, strTools mode, ...) {
         case _TOUPPERCASE:      { return (void *)__ToUppercase(s); }
         case _TOLOWERCASE:      { return (void *)__ToLowercase(s); }
         // case _SPLIT:            { return (void *)__SplitChar(s, get_va_arg_char(args)); }
+        case _SPLITCHAR:        { return (void *)__SplitChar(s, get_va_arg_char(args)); }
         case _REPLACE:          { 
             char *find = get_va_arg_str(args);
             char *replace = get_va_arg_str(args);
             return (void *)__Replace(s, find, replace); 
+        }
+        case _JOIN:             { 
+            char **arr = get_va_args_dptr_str(args);
+            char delim = get_va_arg_char(args);
+            return (void *)__Join(s, (const char **)arr, delim); 
         }
         // case _GETSUBSTRBYCHAR:  { return (void *)__get_substr(s, get_va_arg_char(args), get_va_arg_char(args)); }
         // case _RMCHAR:           { return (void *)__RmChar(s, get_va_arg_char(args)); }
@@ -220,6 +226,10 @@ long __ToLowercase(str *s) {
 }
 
 long __Replace(str *s, char *find, char *replacement) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    printf("%s | %s | %s\n", s->data, find, replacement);
     long sz = strlen(s->data);
     if(strlen(replacement) > strlen(find))
         sz = strlen(s->data) + (strlen(replacement) - strlen(find));
@@ -229,7 +239,7 @@ long __Replace(str *s, char *find, char *replacement) {
     for(int i = 0; i < strlen(s->data); i++) {
         if(s->data[i] == find[0]) {
             int ch_count = 0;
-            for(int start = i; start < strlen(find); start++) {
+            for(int start = i; start < strlen(find) + 1; start++) {
                 // Match all Characters
                 if(s->data[start] == find[ch_count])
                     ch_count++;
@@ -248,6 +258,55 @@ long __Replace(str *s, char *find, char *replacement) {
     free(buffer);
 
     return 1;
+}
+
+char **__SplitChar(str *s, const char delim) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    long args_count = __CountChar(s, delim);
+    char **arr = (char **)alloc2(args_count + 1);
+    int idx = 0;
+    int ch_count = 0;
+
+    arr[0] = (char *)alloc(1);
+    for(int i = 0; i < strlen(s->data); i++) 
+    {
+        if(s->data[i] == '\0')
+            break;
+
+        if(s->data[i] == delim) {
+            idx++;
+            arr[idx] = (char *)alloc(1);
+            ch_count = 1;
+            continue;
+        }
+
+        strncat(arr[idx], &s->data[i], sizeof(char));
+        arr[idx] = (char *)realloc(arr[idx], ch_count + 1);
+        ch_count++;
+    }
+
+    return arr;
+}
+
+void *__Join(str *s, const char **arr, const char delim) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    int i = 0;
+    while(arr[i] != NULL)
+    {
+        strncat(s->data, arr[i], strlen(arr[i]));
+        if(arr[ i + 1] != NULL)
+            strncat(s->data, &delim, sizeof(char));
+        i++;
+    }
+}
+
+static char **get_va_args_dptr_str(va_list a) {
+    char **arg = (char **)va_arg(a, char**);
+    return arg;
 }
 
 static char *get_va_arg_str(va_list a) {

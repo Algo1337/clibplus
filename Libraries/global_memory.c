@@ -15,7 +15,7 @@ char *alloc(long mem_sz) {
     return data;
 }
 
-void **AllocateDChar(long mem_sz) {
+void **alloc2(long mem_sz) {
     char **data = (char **)malloc(sizeof(char *) * mem_sz);
     memset(data, '\0', mem_sz);
 

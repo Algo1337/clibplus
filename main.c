@@ -40,6 +40,12 @@ int main() {
     chk = (long)s->Utils(s, _REPLACE, "test", "GAY");
     printf("Replace: %ld | Data: %s\n", chk, s->data);
 
+    char **test = (char **)s->Utils(s, _SPLITCHAR, 'G');
+    strcat(s->data, " [ ");
+    s->Utils(s, _JOIN, test, ' ');
+    strcat(s->data, " ]");
+    printf("_SPLITCHAR && _JOIN: %s\n", s->data);
+
     free(s->data);
     free(s);
     return 0;

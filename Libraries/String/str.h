@@ -29,7 +29,8 @@ typedef enum strTools {
     _SPLITCHAR,
     _TOLOWERCASE,
     _TOUPPERCASE,
-    _GETSUBSTRBYCHAR
+    _GETSUBSTRBYCHAR,
+    _JOIN
 } strTools;
 
 typedef struct str {
@@ -91,11 +92,15 @@ long    __ToUppercase(str *s);
 //
 //      Convert all uppercase characters to lowercase
 //
-long    __ToLowercase(str *s);
+long            __ToLowercase(str *s);
 
-long __Replace(str *s, char *find, char *replace);
+long            __Replace(str *s, char *find, char *replace);
+char            **__SplitChar(str *s, const char delim);
 
-static char    *get_va_arg_str(va_list a);
-static char    get_va_arg_char(va_list a);
+void            *__Join(str *s, const char **arr, const char delim);
+
+static char     **get_va_args_dptr_str(va_list a);
+static char     *get_va_arg_str(va_list a);
+static char     get_va_arg_char(va_list a);
 
 #endif

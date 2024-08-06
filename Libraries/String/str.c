@@ -12,11 +12,11 @@ str *string(const char *data) {
     if(data)
         s->data = strdup(data);
         
-    s->Utils = __Utils;
+    s->Utils = __StrUtils;
 }
 
 
-void *__Utils(str *s, strTools mode, ...) {
+void *__StrUtils(str *s, strTools mode, ...) {
     int first = 1, sec = 2;
 	va_list args;
     va_start(args, sec);
@@ -302,19 +302,4 @@ void *__Join(str *s, const char **arr, const char delim) {
             strncat(s->data, &delim, sizeof(char));
         i++;
     }
-}
-
-static char **get_va_args_dptr_str(va_list a) {
-    char **arg = (char **)va_arg(a, char**);
-    return arg;
-}
-
-static char *get_va_arg_str(va_list a) {
-	char *arg = (char *)va_arg(a, char*);
-	return  arg;
-}
-
-static char get_va_arg_char(va_list a) {
-	char arg = (char)va_arg(a, int);
-	return arg;
 }

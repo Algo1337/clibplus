@@ -42,7 +42,7 @@ typedef struct str {
 } str;
 
 str     *string(const char *data);
-void    *__Utils(str *s, strTools mode, ...);
+void    *__StrUtils(str *s, strTools mode, ...);
 
 //
 //      Strip whitespaces from front and end of a string
@@ -109,9 +109,5 @@ char            **__SplitChar(str *s, const char delim);
 //              Append all element in the array provided to string with the delim between each
 //
 void            *__Join(str *s, const char **arr, const char delim);
-
-static char     **get_va_args_dptr_str(va_list a);
-static char     *get_va_arg_str(va_list a);
-static char     get_va_arg_char(va_list a);
 
 #endif

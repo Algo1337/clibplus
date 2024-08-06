@@ -2,6 +2,8 @@
     "files.associations": {
         "str.h": "c",
         "malloc.h": "c",
-        "global_memory.h": "c"
+        "global_memory.h": "c",
+        "stdlib.h": "c",
+        "global.h": "c"
     }
 }

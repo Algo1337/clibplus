@@ -4,49 +4,21 @@
 
 #include "Libraries/global.h"
 #include "Libraries/String/str.h"
+#include "Libraries/Array/arr.h"
 
 int main() {
-    str *s = string("d   test   ");
-    long chk = (long) s->Utils(s, _STRIP);
-    printf("_STRIP: %ld | Data: %s\n", chk, s->data);
+    Arr *a = Array(NULL);
+    char *t[] = {"GAY", "LUL", "FAG", "NIGGER"};
+    
+    a->Utils(a, __APPEND, "TEST");
+    a->Utils(a, __MERGE, &t);
 
-    chk = (long)s->Utils(s, _TRIM, ' ');
-    printf("_TRIM: %ld | Data: %s\n", chk, s->data);
+    printf("%ld\n", a->idx);
+    for(int i = 0; i < a->idx; i++) {
+        printf("[%d] %s\n", i, a->arr[i]);
+    }
 
-    chk = (long)s->Utils(s, _COUNTCHAR, 't');
-    printf("_COUNTCHAR: %ld | Data: %s\n", chk, s->data);
-
-    chk = (long)s->Utils(s, _COUNTSTR, "test");
-    printf("_COUNTSTR: %ld | Data: %s\n", chk, s->data);
-
-    chk = (long)s->Utils(s, _STARTSWITH, "dt");
-    printf("_STARTSWITH: %ld | Data: %s\n", chk, s->data);
-
-    chk = (long)s->Utils(s, _ENDSWITH, "est");
-    printf("_ENDSWITH: %ld | Data: %s\n", chk, s->data);
-
-    chk = (long)s->Utils(s, _ISUPPERCASE);
-    printf("_ISUPPERCASE: %ld | Data: %s\n", chk, s->data);
-
-    chk = (long)s->Utils(s, _ISLOWERCASE);
-    printf("_ISLOWERCASE: %ld | Data: %s\n", chk, s->data);
-
-    chk = (long)s->Utils(s, _TOUPPERCASE);
-    printf("_TOUPPERCASE: %ld | Data: %s\n", chk, s->data);
-
-    chk = (long)s->Utils(s, _TOLOWERCASE);
-    printf("ToLowerCase: %ld | Data: %s\n", chk, s->data);
-
-    chk = (long)s->Utils(s, _REPLACE, "test", "GAY");
-    printf("Replace: %ld | Data: %s\n", chk, s->data);
-
-    char **test = (char **)s->Utils(s, _SPLITCHAR, 'G');
-    strcat(s->data, " [ ");
-    s->Utils(s, _JOIN, test, ' ');
-    strcat(s->data, " ]");
-    printf("_SPLITCHAR && _JOIN: %s\n", s->data);
-
-    free(s->data);
-    free(s);
+    free(a->arr);
+    free(a);
     return 0;
 }

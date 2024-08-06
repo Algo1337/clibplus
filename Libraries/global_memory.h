@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef GLOBAL_MEMORY_H
 #define GLOBAL_MEMORY_H
 

@@ -1,17 +1,4 @@
-/*
-*       [ C String Array Library ]
-*
-*   @author: Algorithm
-*   @github: @AdvancedAlgorithm
-*   @description: This software is release "AS-IS" for public use. 
-*                 any bugs or issues must be reported for fixures.
-*
-*   LIST OF FEAUTRES
-*   new_array       ( new_string(char *arr) )               Array      DONE
-*   Append          ( a->Append(Array *a, char *data) )    int         DONE
-*   Remove          ( a->Remove(Array *a, int idx) )       int         DONE
-*   Merge           ( a->Merge(Array *a, char **arr) )     int         DONE
-*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -23,6 +10,7 @@ Arr *Array(char **c_arr) {
     a->idx = 0;
 
     a->Append = __AppendElement;
+    a->Remove = __RemoveElement;
     // a->IsInArray = is_in_arr;
     a->Kill = _killArray;
 
@@ -49,10 +37,29 @@ void __AppendElement(Arr *a, char *data) {
 }
 
 void __RemoveElement(Arr *a, int idx) {
-    if(idx >= a->idx)
+    if(idx >= a->idx) 
         return;
-        
-    a->arr[idx] = NULL;
+
+    char **newArr = (char **)malloc(sizeof(char *) * (a->idx - 1));
+    for(int i = 0, j = 0; i < a->idx; i++) {
+        if (i == idx) {
+            free(a->arr[i]);
+            continue;
+        }
+        newArr[j++] = a->arr[i];
+    }
+
+    free(a->arr);
+    a->arr = newArr;
+    a->idx--;
+}
+
+int in_array(Arr *a, char *data) {
+    for(int i = 0; i < a->idx; i++)
+        if(!strcmp(a->arr[i], data))
+            return 1;
+
+    return 0;
 }
 
 void _killArray(Arr *a) {

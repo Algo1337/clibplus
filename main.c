@@ -18,6 +18,8 @@ int main() {
     a->Append(a, "Is");
     a->Append(a, "Gay");
 
+    a->Remove(a, 2);
+
     c = count_arr(a->arr);
     printf("Elements: %d\n", c);
     for(int i = 0; i < a->idx; i++) {

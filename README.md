@@ -14,5 +14,17 @@ To avoid re-inventing the wheels for future projects and to absract more develop
 
 
 # Progress
-[x] String Lib
-[ ] Array Lib
+
+Symbol Definitions:
+
+✅ = Completed
+🛠️ = Being Worked On
+⚠️ = Needs Work
+
+```
+✅⚠️    String Lib
+🛠️⚠️    Array Lib
+⚠️      Map Lib
+⚠️      Request Lib
+⚠️      Web Server Lib
+```

@@ -17,9 +17,7 @@ To avoid re-inventing the wheels for future projects and to absract more develop
 
 <p>Symbol Definitions:<p>
 
-<p>✅ = Completed</p>
-<p>🛠️ = Being Worked On</p>
-<p>⚠️ = Needs Work</p>
+<p>✅ = Completed<br />🛠️ = Being Worked On<br />⚠️ = Needs Work</p>
 
 ```
 ✅⚠️    String Lib

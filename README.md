@@ -15,11 +15,11 @@ To avoid re-inventing the wheels for future projects and to absract more develop
 
 # Progress
 
-Symbol Definitions:
+<p>Symbol Definitions:<p>
 
-✅ = Completed
-🛠️ = Being Worked On
-⚠️ = Needs Work
+<p>✅ = Completed</p>
+<p>🛠️ = Being Worked On</p>
+<p>⚠️ = Needs Work</p>
 
 ```
 ✅⚠️    String Lib

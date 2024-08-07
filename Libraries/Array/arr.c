@@ -30,6 +30,10 @@ Arr *Array(char **c_arr) {
     return a;
 }
 
+void *__ArrUtils(Arr *a, ArrTools mode, ...) {
+    
+}
+
 void __AppendElement(Arr *a, char *data) {
     a->arr = (char **)realloc(a->arr, sizeof(char *) * (a->idx + 1));
     a->arr[a->idx] = strdup(data);

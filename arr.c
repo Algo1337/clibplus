@@ -2,8 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "Libraries/global_memory.h"
-
 typedef struct Arr {
     char        **arr;
     long        idx;

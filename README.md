@@ -11,3 +11,8 @@ Please note that using this package can increase binary size due to certain libs
 <b>Why?</b>
 
 To avoid re-inventing the wheels for future projects and to absract more developer to move to C and have to start with that isn't gonna kill their motivation in the process of learning
+
+
+# Progress
+[x] String Lib
+[ ] Array Lib

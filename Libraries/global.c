@@ -20,7 +20,7 @@ char *get_va_arg_str(va_list a) {
 	return  arg;
 }
 
-char get_va_arg_char(va_list a) {
-	char arg = (char)va_arg(a, int);
+int get_va_arg_char(va_list a) {
+	int arg = (int)va_arg(a, int);
 	return arg;
 }

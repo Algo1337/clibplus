@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "arr.h"
 
@@ -9,15 +10,12 @@ Arr *Array(char **c_arr) {
     Arr *a = (Arr *)malloc(sizeof(Arr));
     a->idx = 0;
 
-    a->Append = __AppendElement;
-    a->Remove = __RemoveElement;
-    a->InArray = in_array;
-    // a->IsInArray = is_in_arr;
+    a->Utils = __ArrUtils;
     a->Kill = _killArray;
 
     if(c_arr != NULL) {
         int count = count_arr(c_arr);
-        a->arr = (char **)malloc(sizeof(char *) * count);
+        a->arr = (char **)alloc2(count);
         for(int i = 0; i < count; i++) {
             if(c_arr[i] != NULL && strlen(c_arr[i]) > 0) {
                 a->arr[i] = strdup(c_arr[i]);
@@ -27,23 +25,37 @@ Arr *Array(char **c_arr) {
         return a;
     }
     
-    a->arr = (char **)malloc(sizeof(char *) * 1);
+    a->arr = (char **)alloc2(1);
     return a;
 }
 
-void *__ArrUtils(Arr *a, ArrTools mode, ...) {
-    
+void *__ArrUtils(Arr *a, ArrTools mode, ...) {    int first = 1, sec = 2;
+	va_list args;
+    va_start(args, sec);
+
+	switch(mode) {
+		case __APPEND:          { return (void *)__AppendElement(a, get_va_arg_str(args)); }
+		case __REMOVE_BY_IDX:   { return (void *)__RemoveElement(a, get_va_arg_char(args)); }
+        case __IN_ARRAY:        { return (void *)__in_array(a, get_va_arg_str(args)); }
+	}
+
+    va_end(args);
+	return 0;
 }
 
-void __AppendElement(Arr *a, char *data) {
+long __AppendElement(Arr *a, char *data) {
+    if(a->arr == NULL)
+        return 0;
+
     a->arr = (char **)realloc(a->arr, sizeof(char *) * (a->idx + 1));
     a->arr[a->idx] = strdup(data);
     a->idx++;
+    return 1;
 }
 
-void __RemoveElement(Arr *a, int idx) {
+long __RemoveElement(Arr *a, int idx) {
     if(idx >= a->idx) 
-        return;
+        return 0;
 
     char **newArr = (char **)malloc(sizeof(char *) * (a->idx - 1));
     for(int i = 0, j = 0; i < a->idx; i++) {
@@ -57,9 +69,11 @@ void __RemoveElement(Arr *a, int idx) {
     free(a->arr);
     a->arr = newArr;
     a->idx--;
+
+    return 1;
 }
 
-int in_array(Arr *a, char *data) {
+long __in_array(Arr *a, char *data) {
     for(int i = 0; i < a->idx; i++)
         if(!strcmp(a->arr[i], data))
             return 1;
@@ -76,7 +90,7 @@ void _killArray(Arr *a) {
 
 int count_arr(char **data) {
     int i = 0;
-    while(data[i] != NULL)
+    while((data[i] != NULL))
         i++;
     
     return i;

@@ -13,6 +13,8 @@ str *string(const char *data) {
         s->data = strdup(data);
         
     s->Utils = __StrUtils;
+
+    return s;
 }
 
 
@@ -44,8 +46,6 @@ void *__StrUtils(str *s, strTools mode, ...) {
             char delim = get_va_arg_char(args);
             return (void *)__Join(s, (const char **)arr, delim); 
         }
-        // case _GETSUBSTRBYCHAR:  { return (void *)__get_substr(s, get_va_arg_char(args), get_va_arg_char(args)); }
-        // case _RMCHAR:           { return (void *)__RmChar(s, get_va_arg_char(args)); }
 	}
 
     va_end(args);

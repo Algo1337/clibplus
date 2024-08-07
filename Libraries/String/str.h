@@ -22,14 +22,12 @@ typedef enum strTools {
     _APPEND,
     _REMOVE,
     _REPLACE,
-    _RMCHAR,
     _STRIP,
     _TRIM,
     _SPLIT,
     _SPLITCHAR,
     _TOLOWERCASE,
     _TOUPPERCASE,
-    _GETSUBSTRBYCHAR,
     _JOIN
 } strTools;
 
@@ -92,22 +90,22 @@ long    __ToUppercase(str *s);
 //
 //      Convert all uppercase characters to lowercase
 //
-long            __ToLowercase(str *s);
+long    __ToLowercase(str *s);
 
 //
-//              Replace a Substring
+//      Replace a Substring
 //
-long            __Replace(str *s, char *find, char *replace);
+long    __Replace(str *s, char *find, char *replace);
 
 //
-//              Split a string
+//      Split a string
 //
-char            **__SplitChar(str *s, const char delim);
+char    **__SplitChar(str *s, const char delim);
 
 
 //
-//              Append all element in the array provided to string with the delim between each
+//      Append all element in the array provided to string with the delim between each
 //
-void            *__Join(str *s, const char **arr, const char delim);
+void    *__Join(str *s, const char **arr, const char delim);
 
 #endif

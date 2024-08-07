@@ -7,18 +7,23 @@
 #include "Libraries/Array/arr.h"
 
 int main() {
-    Arr *a = Array(NULL);
-    char *t[] = {"GAY", "LUL", "FAG", "NIGGER"};
+    char *arr[] = {"TEST", "FAG", NULL};
     
-    a->Utils(a, __APPEND, "TEST");
-    a->Utils(a, __MERGE, &t);
+    int c = count_arr(arr);
+    Arr *a = Array(arr);
+    printf("Elements: %d\n", c);
 
-    printf("%ld\n", a->idx);
+    a->Append(a, "GAY");
+    a->Append(a, "Com");
+    a->Append(a, "Is");
+    a->Append(a, "Gay");
+
+    c = count_arr(a->arr);
+    printf("Elements: %d\n", c);
     for(int i = 0; i < a->idx; i++) {
-        printf("[%d] %s\n", i, a->arr[i]);
+        printf("%d: %s\n", i, a->arr[i]);
     }
 
-    free(a->arr);
-    free(a);
+
     return 0;
 }

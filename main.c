@@ -21,7 +21,12 @@ int main() {
 
     c = count_arr(a->arr);
     printf("Elements: %d\n", c);
-    
+
+    a->Utils(a, __APPEND_AT, 1, "NIGGER");
+
+    c = count_arr(a->arr);
+    printf("Elements: %d\n", c);
+
     for(int i = 0; i < a->idx; i++) {
         printf("%d: %s\n", i, a->arr[i]);
     }
@@ -29,7 +34,6 @@ int main() {
     int n = (int)a->Utils(a, __IN_ARRAY, "Is");
     if(n)
         printf("InArray: %d | Elements: %d\n", n, c-1);
-
 
     return 0;
 }

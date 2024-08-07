@@ -33,6 +33,7 @@ typedef struct Arr {
 Arr     *Array(char **c_arr);
 void    *__ArrUtils(Arr *a, ArrTools mode, ...);
 long    __AppendElement(Arr *a, char *data);
+long    __AppendElementAt(Arr *a, int idx, char *data);
 long    __RemoveElement(Arr *a, int idx);
 long    __in_array(Arr *a, char *data);
 void    _killArray(Arr *a);

@@ -29,18 +29,45 @@ Arr *Array(char **c_arr) {
     return a;
 }
 
-void *__ArrUtils(Arr *a, ArrTools mode, ...) {    int first = 1, sec = 2;
+void *__ArrUtils(Arr *a, ArrTools mode, ...) {
+    int first = 1, sec = 2;
 	va_list args;
     va_start(args, sec);
 
 	switch(mode) {
-		case __APPEND:          { return (void *)__AppendElement(a, get_va_arg_str(args)); }
-		case __REMOVE_BY_IDX:   { return (void *)__RemoveElement(a, get_va_arg_char(args)); }
+        // Checks
         case __IN_ARRAY:        { return (void *)__in_array(a, get_va_arg_str(args)); }
+
+        // Modifying
+		case __APPEND:          { return (void *)__AppendElement(a, get_va_arg_str(args)); }
+        case __APPEND_AT:       { return (void *)__AppendElementAt(a, get_va_arg_char(args), get_va_arg_char(args)); }
+		case __REMOVE_BY_IDX:   { return (void *)__RemoveElement(a, get_va_arg_char(args)); }
 	}
 
     va_end(args);
 	return 0;
+}
+
+long __AppendElementAt(Arr *a, int idx, char *data) {
+    if(idx >= a->idx) 
+        return 0;
+
+    char **newArr = (char **)malloc(sizeof(char *) * (a->idx));
+    int i = 0, j = 0;
+    while(i < a->idx + 1) {
+        if (i == idx) {
+            newArr[j++] = a->arr[i];
+            continue;
+        }
+        newArr[j++] = a->arr[i];
+        i++;
+    }
+
+    free(a->arr);
+    a->arr = (char **)realloc(a->arr, a->idx + 1);
+    a->arr = newArr;
+    a->idx++;
+    return 1;
 }
 
 long __AppendElement(Arr *a, char *data) {

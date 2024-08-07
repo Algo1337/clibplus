@@ -11,6 +11,7 @@ Arr *Array(char **c_arr) {
 
     a->Append = __AppendElement;
     a->Remove = __RemoveElement;
+    a->InArray = in_array;
     // a->IsInArray = is_in_arr;
     a->Kill = _killArray;
 

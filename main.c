@@ -26,6 +26,10 @@ int main() {
         printf("%d: %s\n", i, a->arr[i]);
     }
 
+    c = a->InArray(a, "Is");
+    if(c)
+        printf("InArray: %d\n", c);
+
 
     return 0;
 }

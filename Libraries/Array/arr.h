@@ -4,7 +4,7 @@
 #define ARR_H
 
 typedef enum ArrTools {
-
+    __NONE
 } ArrTools;
 
 typedef struct Arr {
@@ -13,7 +13,7 @@ typedef struct Arr {
     
     void    (*Append) (struct Arr *a, char *data);
     void    (*Remove) (struct Arr *a, int idx);
-    int     (*IsInArray) (struct Arr *a, char *element);
+    int     (*InArray) (struct Arr *a, char *element);
     void    (*Kill) (struct Arr *a);
 } Arr;
 

@@ -2,8 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "Libraries/global.h"
-#include "Libraries/String/str.h"
+#include <C_TYPES/c_types.h>
 
 int main() {
     str *s = string("d   test   ");

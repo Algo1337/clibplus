@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "Libraries/Array/arr.h"
+#include <C_TYPES/c_types.h>
 
 int run_arr() {
     char *arr[] = {"TEST", "FAG"};

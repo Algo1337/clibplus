@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 // This Lib Currently Cannot Be Threaded
-#include "Libraries/Array/dim.h"
+#include <C_TYPES/c_types.h>
 
 int main() {
     // Create an Instance of Map

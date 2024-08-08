@@ -95,7 +95,7 @@ long    __ToLowercase(str *s);
 //
 //      Replace a Substring
 //
-long    __Replace(str *s, char *find, char *replace);
+long    __Replace(str *s, const char *find, const char *replace);
 
 //
 //      Split a string

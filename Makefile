@@ -1,6 +1,4 @@
 .PHONY: all
 
 all:
-	gcc main.c \
-	Zibraries/String/*.c \ 
-	Zibraries/*.c
+	gcc main.c Libraries/*.c Libraries/String/*.c Libraries/Array/*.c -g3 -ggdb

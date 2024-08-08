@@ -26,8 +26,8 @@ typedef struct Arr {
     char    **arr;
     long    idx;
     
-    void *  (*Utils) (struct Arr *a, ArrTools mode, ...);
-    void    (*Kill) (struct Arr *a);
+    void *  (*Utils)    (struct Arr *a, ArrTools mode, ...);
+    void    (*Kill)     (struct Arr *a);
 } Arr;
 
 Arr     *Array(char **c_arr);

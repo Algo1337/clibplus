@@ -225,7 +225,7 @@ long __ToLowercase(str *s) {
     return chk;
 }
 
-long __Replace(str *s, char *find, char *replacement) {
+long __Replace(str *s, const char *find, const char *replacement) {
     if(s->data == NULL || strlen(s->data) == 0)
         return 0;
 

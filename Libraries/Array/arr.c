@@ -40,7 +40,7 @@ void *__ArrUtils(Arr *a, ArrTools mode, ...) {
 
         // Modifying
 		case __APPEND:          { return (void *)__AppendElement(a, get_va_arg_str(args)); }
-        case __APPEND_AT:       { return (void *)__AppendElementAt(a, get_va_arg_char(args), get_va_arg_char(args)); }
+        case __APPEND_AT:       { return (void *)__AppendElementAt(a, get_va_arg_char(args), get_va_arg_str(args)); }
 		case __REMOVE_BY_IDX:   { return (void *)__RemoveElement(a, get_va_arg_char(args)); }
 	}
 
@@ -49,24 +49,22 @@ void *__ArrUtils(Arr *a, ArrTools mode, ...) {
 }
 
 long __AppendElementAt(Arr *a, int idx, char *data) {
-    if(idx >= a->idx) 
-        return 0;
+    char **new = (char **)alloc2(a->idx + 1);
+    memset(new, '\0', (sizeof(char *) * a->idx) + 1);
 
-    char **newArr = (char **)malloc(sizeof(char *) * (a->idx));
     int i = 0, j = 0;
-    while(i < a->idx + 1) {
-        if (i == idx) {
-            newArr[j++] = a->arr[i];
-            continue;
-        }
-        newArr[j++] = a->arr[i];
-        i++;
-    }
+    while(i < idx)
+        new[i++] = a->arr[j++];
+
+    new[i++] = data;
+    while(i < a->idx)
+        new[i++] = a->arr[j++];
+
+    new[i] = NULL;
+            
 
     free(a->arr);
-    a->arr = (char **)realloc(a->arr, a->idx + 1);
-    a->arr = newArr;
-    a->idx++;
+    a->arr = new;
     return 1;
 }
 
@@ -84,9 +82,10 @@ long __RemoveElement(Arr *a, int idx) {
     if(idx >= a->idx) 
         return 0;
 
-    char **newArr = (char **)malloc(sizeof(char *) * (a->idx - 1));
+    char **newArr = (char **)alloc2(a->idx - 1);
     for(int i = 0, j = 0; i < a->idx; i++) {
         if (i == idx) {
+            printf("Removing: %s\n", a->arr[i]);
             free(a->arr[i]);
             continue;
         }

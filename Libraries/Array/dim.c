@@ -4,7 +4,10 @@
 
 #include "dim.h"
 
+// A Copy Of The Last Used DimArrayElement
 DimArrayElement *CURRENT_DIM_ARR = NULL;
+
+// == [ DimArray ] ==
 
 DimArray *create_arr(int dimensions) {
     DimArray *a = (DimArray *)malloc(sizeof(DimArray));
@@ -19,6 +22,7 @@ DimArray *create_arr(int dimensions) {
 
     a->Append = append2arr;
     a->Get = __getElementAt;
+    a->Kill = __KillMap;
 
     return a;
 }
@@ -45,6 +49,8 @@ char *__getElementAt(DimArray *a, int row, int column) {
     return a->arr[row]->arr[column];
 }
 
+// == [ DimArrayElement ] ==
+
 DimArrayElement *create_dim_arr_element() {
     DimArrayElement *new_arr = (DimArrayElement *)malloc(sizeof(DimArrayElement));
     new_arr->arr = (char **)malloc(sizeof(char *) * 1);
@@ -60,4 +66,20 @@ DimArrayElement *__Append(DimArrayElement *e, char *data) {
     e->columns++;
     e->arr = (char **)realloc(e->arr, sizeof(char *) * e->columns + 1);
     return e;
+}
+
+void __KillMap(DimArray *a) {
+    for(int i = 0; i < a->rows; i++) {
+        if(a->arr[i] == NULL)
+            break;
+
+        if(a->arr[i]->arr == NULL)
+            break;
+
+        for(int j = 0; j < a->arr[i]->columns; j++)
+            free(a->arr[i]->arr[j]);
+        
+        free(a->arr[i]);
+    }
+    free(a->arr);
 }

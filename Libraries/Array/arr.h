@@ -27,6 +27,8 @@ typedef struct Arr {
     
     // Array Utilities
     void *  (*Utils)    (struct Arr *a, ArrTools mode, ...);
+
+    // Clean The Struct
     void    (*Kill)     (struct Arr *a);
 } Arr;
 

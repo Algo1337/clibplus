@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 // This Lib Currently Cannot Be Threaded
-#include "dim.h"
+#include "Libraries/Array/dim.h"
 
 int main() {
     // Create an Instance of Map
@@ -44,5 +44,7 @@ int main() {
             printf("[%d][%d] %s\n", i, j, a->arr[i]->arr[j]);
     }
 
+    a->Kill(a);
+    free(a);
     return 0;
 }

@@ -6,5 +6,6 @@
         "stdlib.h": "c",
         "global.h": "c",
         "map.h": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

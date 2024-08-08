@@ -35,6 +35,7 @@ typedef struct str {
     char    *data;
     long    _idx;
 
+    // String Utilities
     void *  (*Utils) (struct str *s, strTools mode, ...);
     void *  (*Kill)  (struct str *s);
 } str;

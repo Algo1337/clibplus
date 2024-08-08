@@ -17,7 +17,6 @@ typedef enum ArrTools {
     __APPEND_AT,        // Append Element @ a IDX position provided
     __REMOVE_BY_IDX,    // Remove Element By Idx
     __REMOVE_BY_STRING, // Remove Element Matching String Provided
-    __REMOVE_BY_SUBSTR, // Remove Element Containing a Substr
     __MERGE_ARR,        // Append an entire array into the current one
     __GET_ELEMENT       // Get Element By IDX
 } ArrTools;
@@ -30,13 +29,54 @@ typedef struct Arr {
     void    (*Kill)     (struct Arr *a);
 } Arr;
 
+//
+//      Create an instance of Arr taking an array or creating an empty one
+//
 Arr     *Array(char **c_arr);
+
+//
+//      Array Utilities
+//
 void    *__ArrUtils(Arr *a, ArrTools mode, ...);
+
+//
+//      Get Element By Idx
+//
+char    *__get(Arr *a, int idx);
+
+//
+//      Append an Element
+//
 long    __AppendElement(Arr *a, char *data);
+
+//
+//      Append an Element @ Idx
+//
 long    __AppendElementAt(Arr *a, int idx, char *data);
+
+//
+//      Remove Element with Idx
+//
 long    __RemoveElement(Arr *a, int idx);
+
+//
+//      Merge an array into the current one
+//
+void    *__Merge(Arr *a, char **arr);
+
+//
+//      Check if the element provided is in the array
+//
 long    __in_array(Arr *a, char *data);
-void    _killArray(Arr *a);
+
+//
+//      Count a dptr array
+//
 int     count_arr(char **data);
+
+//
+//      Clean the struct up
+//
+void    _killArray(Arr *a);
 
 #endif

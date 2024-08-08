@@ -37,11 +37,16 @@ void *__ArrUtils(Arr *a, ArrTools mode, ...) {
 	switch(mode) {
         // Checks
         case __IN_ARRAY:        { return (void *)__in_array(a, get_va_arg_str(args)); }
+        case __GET_ELEMENT:     { return (void *)__get(a, (int)get_va_arg_char(args)); }
 
         // Modifying
 		case __APPEND:          { return (void *)__AppendElement(a, get_va_arg_str(args)); }
-        case __APPEND_AT:       { return (void *)__AppendElementAt(a, get_va_arg_char(args), get_va_arg_str(args)); }
+        case __APPEND_AT:       { 
+            int ch = get_va_arg_char(args);
+            char *str = get_va_arg_str(args);
+            return (void *)__AppendElementAt(a, ch, str); }
 		case __REMOVE_BY_IDX:   { return (void *)__RemoveElement(a, get_va_arg_char(args)); }
+        case __MERGE_ARR:       { return (void *)__Merge(a, get_va_args_dptr_str(args)); }
 	}
 
     va_end(args);
@@ -49,8 +54,11 @@ void *__ArrUtils(Arr *a, ArrTools mode, ...) {
 }
 
 long __AppendElementAt(Arr *a, int idx, char *data) {
+    printf("%d: %s\n", idx, data);
+    if(idx >= a->idx || data == NULL)
+        return 0;
+
     char **new = (char **)alloc2(a->idx + 1);
-    memset(new, '\0', (sizeof(char *) * a->idx) + 1);
 
     int i = 0, j = 0;
     while(i < idx)
@@ -86,7 +94,6 @@ long __RemoveElement(Arr *a, int idx) {
     char **newArr = (char **)alloc2(a->idx - 1);
     for(int i = 0, j = 0; i < a->idx; i++) {
         if (i == idx) {
-            printf("Removing: %s\n", a->arr[i]);
             free(a->arr[i]);
             continue;
         }
@@ -100,6 +107,34 @@ long __RemoveElement(Arr *a, int idx) {
     return 1;
 }
 
+void *__Merge(Arr *a, char **arr) {
+    if(arr == NULL)
+        return NULL;
+
+    int new_arr_count = count_arr(arr) + (int)a->idx - 1;
+    
+    char **new = (char **)alloc2(new_arr_count);
+    for(int i = 0; i < a->idx; i++)
+        new[i] = a->arr[i];
+
+    for(int i = 0; i < new_arr_count; i++)
+        new[a->idx++] = arr[i];
+
+    new[a->idx] = NULL;
+    free(a->arr);
+    a->arr = new;
+
+    return NULL;
+}
+
+char *__get(Arr *a, int idx) {
+    for(int i = 0; i < a->idx; i++)
+        if(i == idx)
+            return a->arr[i];
+            
+    return NULL;
+}
+
 long __in_array(Arr *a, char *data) {
     for(int i = 0; i < a->idx; i++)
         if(!strcmp(a->arr[i], data))
@@ -110,9 +145,12 @@ long __in_array(Arr *a, char *data) {
 
 void _killArray(Arr *a) {
     for(int i = 0; i < a->idx; i++) {
-        if(a->arr[i] != NULL)
-            free(a->arr[i]);
+        if(a->arr[i] == NULL)
+            break;
+
+        a->arr[i] = NULL;
     }
+    free(a->arr);
 }
 
 int count_arr(char **data) {

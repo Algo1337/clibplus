@@ -22,14 +22,28 @@ int main() {
     a->Utils(a, __REMOVE_BY_IDX, 2);
     printf("__REMOVE_BY_IDX: Elements: %d\n", count_arr(a->arr));
 
-    __AppendElementAt(a, 2, "NIGGER");
-    printf("__APPEND_AT: Elements: %d\n", count_arr(a->arr));
+    a->Utils(a, __APPEND_AT, 2, "NIGGER");
+    // __AppendElementAt(a, 2, "NIGGER");
+    printf("__APPEND_AT Elements: %d\n", count_arr(a->arr));
 
-    // Display all elements
-    for(int i = 0; i < a->idx; i++)
-        printf("%d: %s\n", i, a->arr[i]);
+    a->Utils(a, __MERGE_ARR, arr);
+    printf("__MERGE_ARR Elements: %d\n", count_arr(a->arr));
+    
+    char *test = a->Utils(a, __GET_ELEMENT, 3);
+    printf("__GET_ELEMENT: %s\n", test);
 
     printf("InArray: %d | Elements: %d\n", (int)a->Utils(a, __IN_ARRAY, "Is"), count_arr(a->arr));
 
+    // Display all elements
+    for(int i = 0; i < a->idx; i++) {
+        if(a->arr[i] == NULL)
+            break;
+        
+        printf("%d: %s\n", i, a->arr[i]);
+    }
+
+    a->Kill(a);
+    free(test);
+    free(a);
     return 0;
 }

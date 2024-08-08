@@ -39,7 +39,14 @@ typedef struct str {
     void *  (*Kill)  (struct str *s);
 } str;
 
+//
+//      Create an Instace of str
+//
 str     *string(const char *data);
+
+//
+//      Set of String Utilities Using ArrTools
+//
 void    *__StrUtils(str *s, strTools mode, ...);
 
 //

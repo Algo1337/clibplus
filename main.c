@@ -20,6 +20,7 @@ int main() {
     a->Append(a, 0, "TEST")->Append(CURRENT_DIM_ARR, "BEEP");
     a->Append(a, 1, "NEW")->Append(CURRENT_DIM_ARR, "BRUH");
 
+    // Do not free this as it will delete from the array ( Use a->Kill(a); when done )
     char *e = a->Get(a, 0, 1);
     printf("a->Get(): %s\n", e);
     

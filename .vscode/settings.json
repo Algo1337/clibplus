@@ -4,6 +4,7 @@
         "malloc.h": "c",
         "global_memory.h": "c",
         "stdlib.h": "c",
-        "global.h": "c"
+        "global.h": "c",
+        "map.h": "c"
     }
 }

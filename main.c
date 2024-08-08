@@ -15,9 +15,9 @@ int main() {
     a->Utils(a, __APPEND, "Com");
     a->Utils(a, __APPEND, "Is");
     a->Utils(a, __APPEND, "Gay");
-    a->Utils(a, __APPEND, "Gay");
-    a->Utils(a, __APPEND, "Gay");
-    a->Utils(a, __APPEND, "Gay");
+    a->Utils(a, __APPEND, "fdgfw");
+    a->Utils(a, __APPEND, "ewfwf");
+    a->Utils(a, __APPEND, "efwfw");
 
     a->Utils(a, __REMOVE_BY_IDX, 2);
     printf("__REMOVE_BY_IDX: Elements: %d\n", count_arr(a->arr));

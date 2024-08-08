@@ -57,7 +57,7 @@ long __AppendElementAt(Arr *a, int idx, char *data) {
         new[i++] = a->arr[j++];
 
     new[i++] = data;
-    while(i < a->idx)
+    while(i < a->idx + 1)
         new[i++] = a->arr[j++];
 
     new[i] = NULL;
@@ -65,6 +65,7 @@ long __AppendElementAt(Arr *a, int idx, char *data) {
 
     free(a->arr);
     a->arr = new;
+    a->idx++;
     return 1;
 }
 

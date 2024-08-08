@@ -2,10 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "Libraries/String/str.h"
 #include "Libraries/Array/arr.h"
 
-int main() {
+int run_arr() {
     char *arr[] = {"TEST", "FAG"};
 
     // Create an array instance providing a pre-made array
@@ -29,9 +28,11 @@ int main() {
     a->Utils(a, __APPEND_AT, 2, "TEST");
     printf("__APPEND_AT Elements: %d\n", count_arr(a->arr));
 
+    // Merge an existing array
     a->Utils(a, __MERGE_ARR, arr);
     printf("__MERGE_ARR Elements: %d\n", count_arr(a->arr));
     
+    // Get an element @ idx (Do not free to avoid loosing data. Use a->Kill(a); when done )
     char *test = a->Utils(a, __GET_ELEMENT, 3);
     printf("__GET_ELEMENT: %s\n", test);
 
@@ -45,12 +46,12 @@ int main() {
         printf("%d: %s\n", i, a->arr[i]);
     }
 
-    // Arr to String
+    // Arr to String ( Free separately )
     char *arr2str = __toStr(a);
     printf("%s\n", arr2str);
 
     a->Kill(a);
-    free(test);
+    free(arr2str);
     free(a);
     return 0;
 }

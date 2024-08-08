@@ -20,13 +20,33 @@ typedef enum MapTools {
     __GET_KEY_VALUE
 } MapTools;
 
+/*
+
+{
+    "username": "",
+    "password": "",
+    "stesser_plan": {
+        "attack_time": "1200"
+    },
+    "rank": ""
+}
+
+*/
+
+typedef struct JsonField {
+    char    *STRUCTURE_PATH; // "parent/stresser_plan" as default/start of a JSON ( parent/stresser_plan )
+    char    *STRUCTURE;      // "stresser_plan"
+    char    *Key;            // attack_time
+    char    *Value;          // 1200
+} JsonField;
+
 typedef struct Key {
     char    *name;
     char    *value;
 } Key;
 
 typedef struct Map {
-    Key     **keys;     // Map->Keys[i]->Name
+    void     **keys;     // Map->Keys[i]->Name
     long    idx;
     void *  (*Utils) (struct Map *m, MapTools mode, ...);
 } Map;

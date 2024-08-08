@@ -49,6 +49,22 @@ char *__getElementAt(DimArray *a, int row, int column) {
     return a->arr[row]->arr[column];
 }
 
+void __KillMap(DimArray *a) {
+    for(int i = 0; i < a->rows; i++) {
+        if(a->arr[i] == NULL)
+            break;
+
+        if(a->arr[i]->arr == NULL)
+            break;
+
+        for(int j = 0; j < a->arr[i]->columns; j++)
+            free(a->arr[i]->arr[j]);
+        
+        free(a->arr[i]);
+    }
+    free(a->arr);
+}
+
 // == [ DimArrayElement ] ==
 
 DimArrayElement *create_dim_arr_element() {
@@ -66,20 +82,4 @@ DimArrayElement *__Append(DimArrayElement *e, char *data) {
     e->columns++;
     e->arr = (char **)realloc(e->arr, sizeof(char *) * e->columns + 1);
     return e;
-}
-
-void __KillMap(DimArray *a) {
-    for(int i = 0; i < a->rows; i++) {
-        if(a->arr[i] == NULL)
-            break;
-
-        if(a->arr[i]->arr == NULL)
-            break;
-
-        for(int j = 0; j < a->arr[i]->columns; j++)
-            free(a->arr[i]->arr[j]);
-        
-        free(a->arr[i]);
-    }
-    free(a->arr);
 }

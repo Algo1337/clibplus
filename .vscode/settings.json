@@ -5,7 +5,11 @@
         "global_memory.h": "c",
         "stdlib.h": "c",
         "global.h": "c",
-        "map.h": "c"
+        "map.h": "c",
+        "type_traits": "c",
+        "xtr1common": "c",
+        "xutility": "c",
+        "c_types.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

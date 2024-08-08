@@ -42,7 +42,7 @@ void *__StrUtils(str *s, strTools mode, ...) {
             return (void *)__Replace(s, find, replace); 
         }
         case _JOIN:             { 
-            char **arr = get_va_args_dptr_str(args);
+            char **arr = get_va_args_dptr_arr(args);
             char delim = get_va_arg_char(args);
             return (void *)__Join(s, (const char **)arr, delim); 
         }

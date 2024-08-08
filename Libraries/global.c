@@ -10,7 +10,7 @@ void err_n_exit(const char *data) {
     exit(0);
 }
 
-char **get_va_args_dptr_str(va_list a) {
+char **get_va_args_dptr_arr(va_list a) {
     char **arg = (char **)va_arg(a, char**);
     return arg;
 }

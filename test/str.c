@@ -46,6 +46,12 @@ int main() {
     strcat(s->data, " ]");
     printf("_SPLITCHAR && _JOIN: %s\n", s->data);
 
+    // Free array
+    int i = 0;
+    while(test[i] != NULL)
+        free(test[i++]);
+    
+    free(test);
     free(s->data);
     free(s);
     return 0;

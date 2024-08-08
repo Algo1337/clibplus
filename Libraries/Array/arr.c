@@ -46,7 +46,7 @@ void *__ArrUtils(Arr *a, ArrTools mode, ...) {
             char *str = get_va_arg_str(args);
             return (void *)__AppendElementAt(a, ch, str); }
 		case __REMOVE_BY_IDX:   { return (void *)__RemoveElement(a, get_va_arg_char(args)); }
-        case __MERGE_ARR:       { return (void *)__Merge(a, get_va_args_dptr_str(args)); }
+        case __MERGE_ARR:       { return (void *)__Merge(a, get_va_args_dptr_arr(args)); }
 	}
 
     va_end(args);
@@ -63,7 +63,7 @@ char *__toStr(Arr *a) {
     i = 0;
     while(a->arr[i] != NULL) {
         strncat(buff, a->arr[i], strlen(a->arr[i]));
-        strncat(buff, (const char *)", ", strlen(", "));
+        strcat(buff, ", ");
         i++;
     }
 
@@ -73,7 +73,6 @@ char *__toStr(Arr *a) {
 }
 
 long __AppendElementAt(Arr *a, int idx, char *data) {
-    printf("%d: %s\n", idx, data);
     if(idx >= a->idx || data == NULL)
         return 0;
 

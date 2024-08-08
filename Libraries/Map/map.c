@@ -9,7 +9,7 @@ Map *create_map() {
     Map *m = (Map *)malloc(sizeof(Map));
     m->idx = 0;
 
-    m->keys = (Key **)malloc(sizeof(Key *) * 1);
+    m->keys = (void **)malloc(sizeof(Key *) * 1);
     memset(m->keys, '\0', sizeof(Key *) * 1);
 
     m->Utils = __MapUtils;
@@ -49,7 +49,7 @@ void *__AppendField(Map *m, const char *key, const char *value) {
     
     m->keys[m->idx] = k;
     m->idx++;
-    m->keys = (Key **)realloc(m->keys, sizeof(Key *) * m->idx + 1);
+    m->keys = (void **)realloc(m->keys, sizeof(Key *) * m->idx + 1);
 }
 
 Key *__getKey(Map *m, const char *key) {
@@ -60,7 +60,7 @@ Key *__getKey(Map *m, const char *key) {
         if(m->keys[i] == NULL)
             break;
 
-        if(strcmp(m->keys[i]->name, key) == 0)
+        if(strcmp((char *)((Key *)m->keys[i])->name, key) == 0)
             return m->keys[i];
     }
 
@@ -75,8 +75,8 @@ char *__getKeyValue(Map *m, const char *key) {
         if(m->keys[i] == NULL)
             break;
 
-        if(strcmp(m->keys[i]->name, key) == 0)
-            return m->keys[i]->value;
+        if(strcmp((char *)((Key *)m->keys[i])->name, key) == 0)
+            return (char *)((Key *)m->keys[i])->value;
     }
 
     return NULL;
@@ -87,7 +87,7 @@ long __InKeys(Map *m, const char *key) {
         return 0;
 
     for(int i = 0; i < m->idx; i++)
-        if(strcmp(m->keys[i]->name, key) == 0)
+        if(strcmp((char *)((Key *)m->keys[i])->name, key) == 0)
             return 1;
 
     return 1;

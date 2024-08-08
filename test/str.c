@@ -35,10 +35,10 @@ int main() {
     printf("_TOUPPERCASE: %ld | Data: %s\n", chk, s->data);
 
     chk = (long)s->Utils(s, _TOLOWERCASE);
-    printf("ToLowerCase: %ld | Data: %s\n", chk, s->data);
+    printf("_TOLOWERCASE: %ld | Data: %s\n", chk, s->data);
 
     chk = (long)s->Utils(s, _REPLACE, "test", "GAY");
-    printf("Replace: %ld | Data: %s\n", chk, s->data);
+    printf("__REPLACE: %ld | Data: %s\n", chk, s->data);
 
     char **test = (char **)s->Utils(s, _SPLITCHAR, 'G');
     strcat(s->data, " [ ");

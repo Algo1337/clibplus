@@ -53,6 +53,25 @@ void *__ArrUtils(Arr *a, ArrTools mode, ...) {
 	return 0;
 }
 
+char *__toStr(Arr *a) {
+    int i = 0, count = 0;
+    while(a->arr[i] != NULL)
+        count += strlen(a->arr[i++]);
+
+    char *buff = (char *)alloc(count + a->idx + 1);
+    strcat(buff, "[");
+    i = 0;
+    while(a->arr[i] != NULL) {
+        strncat(buff, a->arr[i], strlen(a->arr[i]));
+        strncat(buff, (const char *)", ", strlen(", "));
+        i++;
+    }
+
+    strcat(buff, "]");
+
+    return buff;
+}
+
 long __AppendElementAt(Arr *a, int idx, char *data) {
     printf("%d: %s\n", idx, data);
     if(idx >= a->idx || data == NULL)

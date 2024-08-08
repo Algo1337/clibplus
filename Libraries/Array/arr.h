@@ -41,6 +41,11 @@ Arr     *Array(char **c_arr);
 void    *__ArrUtils(Arr *a, ArrTools mode, ...);
 
 //
+//      Convert the current array into a string
+//
+char    *__toStr(Arr *a);
+
+//
 //      Get Element By Idx
 //
 char    *__get(Arr *a, int idx);

@@ -33,7 +33,7 @@ typedef enum strTools {
 
 typedef struct str {
     char    *data;
-    long    _idx;
+    long    idx;
 
     // String Utilities
     void *  (*Utils) (struct str *s, strTools mode, ...);

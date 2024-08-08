@@ -5,6 +5,7 @@
 
 #include "../global.h"
 
+// Map Tools
 typedef enum MapTools {
     ___NONE,
 
@@ -33,6 +34,7 @@ typedef enum MapTools {
 
 */
 
+// JsonField Structure Containing JSON Field Info
 typedef struct JsonField {
     char        *STRUCTURE_PATH; // "parent/stresser_plan" as default/start of a JSON ( parent/stresser_plan )
     char        *STRUCTURE;      // "stresser_plan"
@@ -40,14 +42,18 @@ typedef struct JsonField {
     char        *Value;          // 1200
 } JsonField;
 
+// Key Structure Containing Information of the key
 typedef struct Key {
-    char        *name;
-    char        *value;
+    char        *name;      // Key Name
+    char        *value;     // Key Value
 } Key;
 
+// Map Structure for Keys
 typedef struct Map {
     void        **keys;     // Keys
-    long        idx;         // Key Length
+    long        idx;        // Key Length
+
+    //      Map Utilities
     void *  (*Utils) (struct Map *m, MapTools mode, ...);
 } Map;
 

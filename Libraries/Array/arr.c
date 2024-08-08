@@ -47,6 +47,9 @@ void *__ArrUtils(Arr *a, ArrTools mode, ...) {
             return (void *)__AppendElementAt(a, ch, str); }
 		case __REMOVE_BY_IDX:   { return (void *)__RemoveElement(a, get_va_arg_char(args)); }
         case __MERGE_ARR:       { return (void *)__Merge(a, get_va_args_dptr_arr(args)); }
+        default:                {
+            return NULL;
+        }
 	}
 
     va_end(args);

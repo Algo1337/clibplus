@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 // Include the entire package
-#include "Libraries/c_types.h"
+#include <C_TYPES/c_types.h>
 
 int main() {
     str *s = string("TEST");

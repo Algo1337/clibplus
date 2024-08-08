@@ -11,10 +11,13 @@ typedef enum MapTools {
     // Checking Tools
     __IN_KEYS,
 
-    // Modifying Tools
+    // SET Tools
     __ADD_KEY,
     __REMOVE_KEY,
-    __GET_KEY
+
+    // GET Tools
+    __GET_KEY,
+    __GET_KEY_VALUE
 } MapTools;
 
 typedef struct Key {
@@ -32,6 +35,7 @@ Map *create_map();
 void *__MapUtils(Map *m, MapTools mode, ...);
 void *__AppendField(Map *m, const char *key, const char *value);
 Key *__getKey(Map *m, const char *key);
+char *__getKeyValue(Map *m, const char *key);
 long __InKeys(Map *m, const char *key);
 char *encode_json(const char *data);
 char *decode_json(const char *data);

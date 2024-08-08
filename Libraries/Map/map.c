@@ -26,6 +26,7 @@ void *__MapUtils(Map *m, MapTools mode, ...) {
         // Checks
         case __IN_KEYS:         { return (void *)__InKeys(m, get_va_arg_str(args)); }
         case __GET_KEY:         { return (void *)__getKey(m, get_va_arg_str(args)); }
+        case __GET_KEY_VALUE:   { return (void *)__getKeyValue(m, get_va_arg_str(args)); }
 
         // Modifying
         case __ADD_KEY:         { 
@@ -40,7 +41,7 @@ void *__MapUtils(Map *m, MapTools mode, ...) {
 
 void *__AppendField(Map *m, const char *key, const char *value) {
     if(m == NULL || key == NULL || value == NULL)
-        return key;
+        return NULL;
         
     Key *k = (Key *)malloc(sizeof(Key *));
     k->name = strdup(key);
@@ -53,7 +54,7 @@ void *__AppendField(Map *m, const char *key, const char *value) {
 
 Key *__getKey(Map *m, const char *key) {
     if(m == NULL || key == NULL)
-        return key;
+        return NULL;
 
     for(int i = 0; i < m->idx; i++) {
         if(m->keys[i] == NULL)
@@ -66,10 +67,25 @@ Key *__getKey(Map *m, const char *key) {
     return NULL;
 }
 
+char *__getKeyValue(Map *m, const char *key) {
+    if(m == NULL || key == NULL)
+        return NULL;
+
+    for(int i = 0; i < m->idx; i++) {
+        if(m->keys[i] == NULL)
+            break;
+
+        if(strcmp(m->keys[i]->name, key) == 0)
+            return m->keys[i]->value;
+    }
+
+    return NULL;
+}
+
 long __InKeys(Map *m, const char *key) {
     if(m == NULL || key == NULL)
-        return key;
-        
+        return 0;
+
     for(int i = 0; i < m->idx; i++)
         if(strcmp(m->keys[i]->name, key) == 0)
             return 1;

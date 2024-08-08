@@ -82,13 +82,13 @@ char    *__getKeyValue(Map *m, const char *key);
 long    __InKeys(Map *m, const char *key);
 
 //
-//      Convert Map to JSON
+//      Convert Map to JSON String
 //
-char    *encode_json(Map *m, const char *data);
+char    *encode_json(Map *m);
 
 //
-//      Convert a MAP to a JSON string
+//      Convert a raw json string to a Map
 //
-char    *decode_json(const char *data);
+Map     *decode_json(Map *m, const char *data);
 
 #endif

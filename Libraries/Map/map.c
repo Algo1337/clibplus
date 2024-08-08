@@ -93,10 +93,10 @@ long __InKeys(Map *m, const char *key) {
     return 1;
 }
 
-char *encode_json(Map *m, const char *data) {
+char *encode_json(Map *m) {
 
 }
 
-char *decode_json(const char *data) {
+Map *decode_json(const char *data) {
 
 }

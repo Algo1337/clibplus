@@ -29,7 +29,7 @@ int main() {
 
     // How use append multiple values using a forloop
     char *t[] = {"TESTING", "THIS"};
-    DimArrayElement *em;
+    DimArrayElement *em; // Do not free to avoid deleting the array ( Use a->Kill(a); when done )
     for(int i = 0; i < 2; i++)
         em = a->Append(a, 1, t[i]);
 

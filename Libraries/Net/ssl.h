@@ -13,9 +13,24 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-void init_openssl();
-void cleanup_openssl();
+//
+//      Initial OpenSSL
+//
+void    init_openssl();
+
+//
+//      Create OpenSSL
+//
 SSL_CTX *create_context();
-SSL *ssl_handshake(SSL_CTX *ctx, int sockfd);
+
+//
+//      SSL Handshake
+//
+SSL     *ssl_handshake(SSL_CTX *ctx, int sockfd);
+
+//
+//      Clean Up the OpenSSL Structure
+//
+void    cleanup_openssl();
 
 #endif

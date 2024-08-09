@@ -32,11 +32,13 @@ typedef enum strTools {
 } strTools;
 
 typedef struct str {
-    char    *data;
-    long    idx;
+    char    *data;      // String Data
+    long    idx;        // Current String Length
 
     // String Utilities
     void *  (*Utils) (struct str *s, strTools mode, ...);
+
+    // Clean up the structure
     void    (*Kill)  (struct str *s);
 } str;
 

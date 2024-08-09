@@ -25,12 +25,15 @@ typedef struct HTTPClient {
     int         serverfd;
 } HTTPClient;
 
+//
+// Request Information
+//
 typedef struct HTTPClientResponse {
-    str         *route;
-    str         *full_route;
-    Map         *headers;
-    Map         *query;
-    str         *body;
+    str         *route;         // Page Route
+    str         *full_route;    // Full Route Path
+    Map         *headers;       // Headers
+    Map         *query;         // Data
+    str         *body;          // Response Body Of the Request
 } HTTPClientResponse;
 
 // == [ HTTP Client ] == 
@@ -51,7 +54,7 @@ int                     Create_HTTP_Socket(HTTPClient *http, const char *port);
 void                    __Send_HTTP_Request(HTTPClient *http, const char *hostname, const char *path);
 
 //
-//
+//                      Parse the request's response
 //
 HTTPClientResponse      *__Parse_HTTP_Response(HTTPClient *http);
 

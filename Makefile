@@ -19,4 +19,4 @@ build:
 	Map/*.c \
 	-g3 -ggdb; \
 	ar rcs ctypes.a *.o; rm *.o; mv ctypes.a /usr/local/lib/libtypes.a
-	echo -ne '\x1b[32m[ + ]\x1b[0m Compile your program using $$(c_types_path) argument\n'
+	echo -ne '\x1b[32m[ + ]\x1b[0m Compile your program using -lctypes argument\n'

@@ -63,7 +63,9 @@ long __add2str(str *s, const char *data) {
     strcat(new, data);
     
     // free(s->data);
-    s = string(new);
+    free(s->data);
+    s->data = strdup(new);
+    s->idx = new_sz;
     return 1;
 }
 

@@ -2,11 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define DeclareT(typ, name) \
-    typedef const typ name;
+typedef struct STRUCT {
+    char *name;
+} STRUCT;
 
-#define DeclarePtrT(typ, name) \
-    typedef const typ *name;
+void *test(void *) {
+
+}
 
 DeclareT(char, Char);
 DeclarePtrT(char, String);

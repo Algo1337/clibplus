@@ -6,7 +6,7 @@
 # About
 
 This is a package that extend the minimum linux built-in packages to abstract low-level functions. View the list of included libraries for more information.
-Please note that using this package can increase binary size due to certain libs being used within each-other. Which wouldn't be any difference from using a higher-level language. If you aren't creating application that will proform protection check-sum operation and better proformance.
+Please note that using this package can increase binary size due to certain libs being used within each-other. Which wouldn't be any difference from using a higher-level language. If you aren't creating application that will proform protection check-sum operation and need better proformance.
 
 <b>Why?</b>
 

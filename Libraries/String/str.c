@@ -8,9 +8,8 @@
 
 str *string(const char *data) {
     str *s = (str *)malloc(sizeof(str));
-
     if(data)
-        s->data = strdup(data);
+        s->data = strdup((char *)*&data);
         
     s->Utils = __StrUtils;
 

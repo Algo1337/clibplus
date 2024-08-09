@@ -97,6 +97,6 @@ char *encode_json(Map *m) {
 
 }
 
-Map *decode_json(const char *data) {
+Map *decode_json(Map *m, const char *data) {
 
 }

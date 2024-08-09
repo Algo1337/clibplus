@@ -5,8 +5,8 @@
 // This Lib Currently Cannot Be Threaded
 #include <C_TYPES/c_types.h>
 
-int main() {
-    // Create an Instance of Map
+int run_dim_arr() {
+    // Create an Instance of 2Dimensionial Array
     DimArray *a = create_arr(2);
 
     // Append Values to Array In Row Provided

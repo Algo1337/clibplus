@@ -9,7 +9,12 @@
         "type_traits": "c",
         "xtr1common": "c",
         "xutility": "c",
-        "c_types.h": "c"
+        "c_types.h": "c",
+        "dim.h": "c",
+        "array": "c",
+        "xstring": "c",
+        "xmemory": "c",
+        "string.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

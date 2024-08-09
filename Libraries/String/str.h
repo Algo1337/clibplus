@@ -40,6 +40,12 @@ typedef struct str {
     void *  (*Kill)  (struct str *s);
 } str;
 
+// #define DeclareT(name) \
+//     typedef const char *name;
+
+// DeclareT(String);
+// DeclareT(Char);
+
 //
 //      Create an Instace of str
 //

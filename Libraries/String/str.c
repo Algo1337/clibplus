@@ -8,11 +8,15 @@
 
 str *string(const char *data) {
     str *s = (str *)malloc(sizeof(str));
-    if(data)
-        s->data = strdup((char *)*&data);
-        
+    
     s->Utils = __StrUtils;
     s->Kill = CleanString;
+
+    if(data == NULL)
+        return s;
+
+    if(data)
+        s->data = strdup((char *)*&data);
 
     return s;
 }
@@ -24,6 +28,7 @@ void *__StrUtils(str *s, strTools mode, ...) {
     va_start(args, sec);
 
 	switch(mode) {
+        case _NEW:              { return (void *)__newString(s get_va_arg_char(args)); }
         case _APPEND:           { return (void *)__add2str(s, get_va_arg_str(args)); }
 		case _STRIP:            { return (void *)__Strip(s); }
 		case _TRIM:             { return (void *)__Trim(s, get_va_arg_char(args)); }
@@ -53,19 +58,31 @@ void *__StrUtils(str *s, strTools mode, ...) {
 	return 0;
 }
 
+long __newString(str *s, const char *data) {
+    if(strlen(data) == 0)
+        return 0;
+
+    s->data = strdup(data);
+    s->idx = strlen(data) + 1;
+    return 1;
+}
+
 long __add2str(str *s, const char *data) {
     if(strlen(data) == 0)
         return 0;
+
+    if(s->data == NULL)
+        return __newString(s, data);
 
     int new_sz = strlen(s->data) + strlen(data) + 1;
     char *new = (char *)alloc(new_sz);
     strcat(new, s->data);
     strcat(new, data);
     
-    // free(s->data);
     free(s->data);
     s->data = strdup(new);
     s->idx = new_sz;
+    free(new);
     return 1;
 }
 

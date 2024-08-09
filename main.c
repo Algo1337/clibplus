@@ -7,7 +7,7 @@
 #include "C_TYPES/String/str.h"
 
 int main() {
-    str *s = string("");
+    str *s = string(NULL);
     s->Utils(s, _APPEND, "TEST");
     printf("%s\n", s->data);
 

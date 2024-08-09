@@ -24,6 +24,7 @@ void *__StrUtils(str *s, strTools mode, ...) {
     va_start(args, sec);
 
 	switch(mode) {
+        case _APPEND:           { return (void *)__add2str(s, get_va_arg_str(args)); }
 		case _STRIP:            { return (void *)__Strip(s); }
 		case _TRIM:             { return (void *)__Trim(s, get_va_arg_char(args)); }
 		case _COUNTCHAR:        { return (void *)__CountChar(s, get_va_arg_char(args)); }
@@ -50,6 +51,20 @@ void *__StrUtils(str *s, strTools mode, ...) {
 
     va_end(args);
 	return 0;
+}
+
+long __add2str(str *s, const char *data) {
+    if(strlen(data) == 0)
+        return 0;
+
+    int new_sz = strlen(s->data) + strlen(data) + 1;
+    char *new = (char *)alloc(new_sz);
+    strcat(new, s->data);
+    strcat(new, data);
+    
+    // free(s->data);
+    s = string(new);
+    return 1;
 }
 
 long __Strip(str *s) {
@@ -309,5 +324,5 @@ void CleanString(str *s) {
         return;
 
     s->idx = 0;
-    free(s->data);
+    free(s);
 }

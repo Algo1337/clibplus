@@ -18,5 +18,5 @@ build:
 	Array/*.c \
 	Map/*.c \
 	-g3 -ggdb; \
-	ar rcs ctypes.a *.o; rm *.o; mv ctypes.a /usr/local/lib/libtypes.a
+	ar rcs ctypes.a *.o; rm *.o; mv ctypes.a /usr/local/lib/libctypes.a
 	echo -ne '\x1b[32m[ + ]\x1b[0m Compile your program using -lctypes argument\n'

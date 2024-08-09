@@ -37,7 +37,7 @@ typedef struct str {
 
     // String Utilities
     void *  (*Utils) (struct str *s, strTools mode, ...);
-    void *  (*Kill)  (struct str *s);
+    void    (*Kill)  (struct str *s);
 } str;
 
 #define DeclareT(typ, name) \
@@ -58,6 +58,11 @@ str     *string(const char *data);
 //      Set of String Utilities Using ArrTools
 //
 void    *__StrUtils(str *s, strTools mode, ...);
+
+//
+//      Append To String
+//
+long    __add2str(str *s, const char *data);
 
 //
 //      Strip whitespaces from front and end of a string
@@ -128,6 +133,6 @@ void    *__Join(str *s, const char **arr, const char delim);
 //
 //      Clean up the struct
 //
-void    CleanString(str *s)
+void    CleanString(str *s);
 
 #endif

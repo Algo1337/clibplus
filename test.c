@@ -2,18 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define CHECK_CONDITION(typ, name, x) if ((x) > 0) { \
-    typedef const typ *name; \
-} else { \
-    typedef const typ name; \
-}
+#define DeclareT(typ, name) \
+    typedef const typ name;
 
-// #define DeclareVariable(n, name) \
-//     typedef const n name;
+#define DeclarePtrT(typ, name) \
+    typedef const typ *name;
 
-DeclareVariable(char, String, 1);
-DeclareVariable(char, Char, NULL);
-// DeclareVariable(char, Char);
+DeclareT(char, Char);
+DeclarePtrT(char, String);
 
 void print_shit(String s, Char c) {
     printf("%s: %c\n", (char *)s, (char)c);

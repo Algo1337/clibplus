@@ -40,11 +40,14 @@ typedef struct str {
     void *  (*Kill)  (struct str *s);
 } str;
 
-// #define DeclareT(name) \
-//     typedef const char *name;
+#define DeclareT(typ, name) \
+    typedef const typ name;
 
-// DeclareT(String);
-// DeclareT(Char);
+#define DeclarePtrT(typ, name) \
+    typedef const typ *name;
+
+DeclareT(char, Char);
+DeclarePtrT(char, String);
 
 //
 //      Create an Instace of str
@@ -121,5 +124,10 @@ char    **__SplitChar(str *s, const char delim);
 //      Append all element in the array provided to string with the delim between each
 //
 void    *__Join(str *s, const char **arr, const char delim);
+
+//
+//      Clean up the struct
+//
+void    CleanString(str *s)
 
 #endif

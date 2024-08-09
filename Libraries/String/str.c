@@ -12,6 +12,7 @@ str *string(const char *data) {
         s->data = strdup((char *)*&data);
         
     s->Utils = __StrUtils;
+    s->Kill = CleanString;
 
     return s;
 }
@@ -301,4 +302,12 @@ void *__Join(str *s, const char **arr, const char delim) {
             strncat(s->data, &delim, sizeof(char));
         i++;
     }
+}
+
+void CleanString(str *s) {
+    if(s->data == NULL)
+        return;
+
+    s->idx = 0;
+    free(s->data);
 }

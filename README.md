@@ -26,3 +26,24 @@ To avoid re-inventing the wheels for future projects and to attract more develop
 ⚠️      Request Lib
 ⚠️      Web Server Lib
 ```
+
+# Install
+
+Installing the extension library is just as easy as 
+
+```
+git clone https://https://github.com/advancedalgorithm/C-System-Mixed-Standard-Lib-Extension-Package.git
+cd C-System-*; make build; make cp
+```
+
+*Include the header*
+
+```
+#include <C_TYPES/c_types.h>
+```
+
+*Compile flag*
+
+```
+-lctypes
+```

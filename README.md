@@ -12,6 +12,9 @@ Please note that using this package can increase binary size due to certain libs
 
 To avoid re-inventing the wheels for future projects and to attract more developer to move to C and have to start with that isn't gonna kill their motivation in the process of learning when approaching memory management
 
+# Coming Soon
+
+- An application serving as a github-based repo package manager. Allowing you to download certain libs from this repo from linux CMD-Line (ex: ctypes -i net -extra)
 
 # Progress
 
@@ -45,5 +48,7 @@ cd C-System-*; make build; make cp
 *Compile flag*
 
 ```
--lctypes
+<C_TYPES/c_types.h>         : -lctypes
+<C_TYPES/Net/Socket.h>      : -lctypes
+<C_TYPES/Net/request.h>     : -lssl -lcrypto
 ```

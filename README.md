@@ -16,6 +16,26 @@ To avoid re-inventing the wheels for future projects and to attract more develop
 
 - An application serving as a github-based repo package manager. Allowing you to download certain libs from this repo from linux CMD-Line (ex: ctypes -i net -extra)
 
+# List Of Packages
+``Built-in: /CTYPES/``
+```
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <ctype.h>
+```
+
+``Module: /C_TYPES/Net/``
+```
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+```
+
 # Progress
 
 <p>Symbol Definitions:<p>

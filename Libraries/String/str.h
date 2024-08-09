@@ -46,8 +46,12 @@ typedef struct str {
 #define DeclarePtrT(typ, name) \
     typedef const typ *name;
 
+#define DeclarePtrPtrT(typ, name) \
+    typedef const typ **name;
+
 DeclareT(char, Char);
 DeclarePtrT(char, String);
+DeclarePtrT(char, strArr);
 
 //
 //      Create an Instace of str
@@ -58,6 +62,11 @@ str     *string(const char *data);
 //      Set of String Utilities Using ArrTools
 //
 void    *__StrUtils(str *s, strTools mode, ...);
+
+//
+//      Create a new string
+//
+long    __newString(str *s, const char *data);
 
 //
 //      Append To String

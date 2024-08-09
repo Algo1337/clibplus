@@ -12,10 +12,12 @@ str *string(const char *data) {
     s->Utils = __StrUtils;
     s->Kill = CleanString;
 
+    // Accepting NULL as a parameter
     if(data == NULL)
         return s;
 
-    if(data)
+    // Validate String
+    if(strlen(data) > 0)
         s->data = strdup((char *)*&data);
 
     return s;
@@ -28,7 +30,7 @@ void *__StrUtils(str *s, strTools mode, ...) {
     va_start(args, sec);
 
 	switch(mode) {
-        case _NEW:              { return (void *)__newString(s get_va_arg_char(args)); }
+        case _NEW:              { return (void *)__newString(s, get_va_arg_str(args)); }
         case _APPEND:           { return (void *)__add2str(s, get_va_arg_str(args)); }
 		case _STRIP:            { return (void *)__Strip(s); }
 		case _TRIM:             { return (void *)__Trim(s, get_va_arg_char(args)); }
@@ -48,9 +50,9 @@ void *__StrUtils(str *s, strTools mode, ...) {
             return (void *)__Replace(s, find, replace); 
         }
         case _JOIN:             { 
-            char **arr = get_va_args_dptr_arr(args);
+            const char **arr = (const char **)get_va_args_dptr_arr(args);
             char delim = get_va_arg_char(args);
-            return (void *)__Join(s, (const char **)arr, delim); 
+            return (void *)__Join(s, arr, delim); 
         }
 	}
 
@@ -75,7 +77,7 @@ long __add2str(str *s, const char *data) {
         return __newString(s, data);
 
     int new_sz = strlen(s->data) + strlen(data) + 1;
-    char *new = (char *)alloc(new_sz);
+    char *new = (char *)realloc(s->data, new_sz);
     strcat(new, s->data);
     strcat(new, data);
     
@@ -325,16 +327,19 @@ char **__SplitChar(str *s, const char delim) {
 }
 
 void *__Join(str *s, const char **arr, const char delim) {
-    if(s->data == NULL || strlen(s->data) == 0)
+    if(arr == NULL || delim == '\0')
         return 0;
 
     int i = 0;
     while(arr[i] != NULL)
     {
+        printf("Adding: %s\n", arr[i]);
+        s->data = (char *)realloc(s->data, s->idx + strlen(arr[1]) + 1);
         strncat(s->data, arr[i], strlen(arr[i]));
         if(arr[ i + 1] != NULL)
             strncat(s->data, &delim, sizeof(char));
         i++;
+        s->idx += strlen((const char *)&arr[i]) + 1;
     }
 }
 

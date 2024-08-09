@@ -8,6 +8,7 @@ cp:
 	rm -rf Libraries/String/*.c
 	rm -rf Libraries/Array/*.c
 	rm -rf Libraries/Map/*.c
+	rm -rf Libraries/Net/*.c
 	mkdir -p /usr/local/include/C_TYPES
 	cp -rf Libraries/* /usr/local/include/C_TYPES
 
@@ -17,6 +18,7 @@ build:
 	String/*.c \
 	Array/*.c \
 	Map/*.c \
-	-g3 -ggdb; \
+	Net/*.c \
+	-lssl -lcrypto -g3 -ggdb -w; \
 	ar rcs ctypes.a *.o; rm *.o; mv ctypes.a /usr/local/lib/libctypes.a
 	echo -ne '\x1b[32m[ + ]\x1b[0m Compile your program using -lctypes argument\n'

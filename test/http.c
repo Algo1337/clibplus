@@ -10,7 +10,7 @@
     Basic Web Request
 */
 int main() {
-    HTTPClientResponse *r = RequestURL("www.google.com", "");
+    HTTPClientResponse *r = RequestURL("ipwho.is", "/8.8.4.4");
     printf("%s", r->body->data);
 
     return 0;

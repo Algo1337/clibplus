@@ -16,7 +16,7 @@ To avoid re-inventing the wheels for future projects and to attract more develop
 
 - An application serving as a github-based repo package manager. Allowing you to download certain libs from this repo from linux CMD-Line (ex: ctypes -i net -extra)
 
-# List Of Packages
+# List Of Includes To Certain Sub-Libs
 ``Built-in: /CTYPES/``
 ```
 #include <stdio.h>

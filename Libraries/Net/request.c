@@ -85,7 +85,7 @@ HTTPClientResponse *__Parse_HTTP_Response(HTTPClient *http) {
         a->Utils(a, __APPEND, (char *)&buffer);
     }
 
-    str *s = string("T");
+    str *s = string("- ");
     s->Utils(s, _JOIN, a->arr, ' ');
 
     r->full_route = string(http->url_route); // TODO: Parse to get the last element splitting delim: /

@@ -333,7 +333,6 @@ void *__Join(str *s, const char **arr, const char delim) {
     int i = 0;
     while(arr[i] != NULL)
     {
-        printf("Adding: %s\n", arr[i]);
         s->data = (char *)realloc(s->data, s->idx + strlen(arr[i]) + 1);
         strncat(s->data, arr[i], strlen(arr[i]));
         if(arr[ i + 1] != NULL)

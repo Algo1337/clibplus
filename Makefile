@@ -13,8 +13,8 @@ cp:
 	rm -rf Libraries/Array/*.c
 	rm -rf Libraries/Map/*.c
 	rm -rf Libraries/Net/*.c
-	mkdir -p /usr/local/include/clibs
-	cp -rf Libraries/* /usr/local/include/clibs
+	mkdir -p /usr/local/include/clib
+	cp -rf Libraries/* /usr/local/include/clib
 	rm -r Libraries
 
 build:

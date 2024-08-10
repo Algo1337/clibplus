@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <clibs/c_types.h>
+#include <clib/c_types.h>
 
 int main() {
     // Create an Instace of Map

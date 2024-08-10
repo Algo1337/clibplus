@@ -3,8 +3,8 @@
 #include <stdlib.h>
 
 // Include the entire package
-#include <C_TYPES/c_types.h>
-#include <C_TYPES/Net/request.h>
+#include <clib/c_types.h>
+#include <clib/Net/request.h>
 
 /*
     Basic Web Request

@@ -1,5 +1,5 @@
 <div align="center">
- <h1>C Mixed System Standard Lib Extension</h1>
+ <h1>clib+</h1>
  <p>A complete system built-in mixed standard C library package using the minimial libraries that comes with just about any linux OS</p>
 </div>
 
@@ -17,23 +17,23 @@ To avoid re-inventing the wheels for future projects and to attract more develop
 - An application serving as a github-based repo package manager. Allowing you to download certain libs from this repo from linux CMD-Line (ex: ctypes -i net -extra)
 
 # List Of Includes To Certain Sub-Libs
-``Built-in: /CTYPES/``
+``Built-in Library: <clibs/*.h> <clibs/String/*.h>, <clibs/Arr/*.h>, <clibs/Map/*.h>, <clibs/String/*.h>``
 ```
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <ctype.h>
+#include <stdio.h>          : sudo apt install build-essential
+#include <string.h>         : sudo apt install build-essential
+#include <stdlib.h>         : sudo apt install build-essential
+#include <stdarg.h>         : sudo apt install build-essential
+#include <ctype.h>          : sudo apt install build-essential
 ```
 
-``Module: /C_TYPES/Net/``
+``Sub-Libs: <clibs/Net/*.h>``
 ```
-#include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+#include <unistd.h>         : sudo apt install build-essential
+#include <sys/socket.h>     : sudo apt install build-essential
+#include <arpa/inet.h>      : sudo apt install build-essential
+#include <netdb.h>          : sudo apt install build-essential
+#include <openssl/ssl.h>    : sudo apt install libssl-dev
+#include <openssl/err.h>    : sudo apt install build-essential
 ```
 
 # Progress
@@ -62,13 +62,14 @@ cd C-System-*; make build; make cp
 *Include the header*
 
 ```
-#include <C_TYPES/c_types.h>
+#include <clibs/c_types.h>
 ```
 
 *Compile flag*
 
 ```
-<C_TYPES/c_types.h>         : -lctypes
-<C_TYPES/Net/Socket.h>      : -lctypes
-<C_TYPES/Net/request.h>     : -lssl -lcrypto
+
+<clibs/c_types.h>           : -lctypes
+<clibs/Net/Socket.h>      : -lctypes
+<clibs/Net/request.h>     : -lssl -lcrypto
 ```

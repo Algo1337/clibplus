@@ -4,10 +4,11 @@
 
 #include "cFile.h"
 
-cFile open_file(const char *filepath) {
+cFile *Openfile(const char *filepath) {
     cFile *f = (cFile *)malloc(sizeof(cFile));
 
-    f->Read __readContext;
+    f->Read = __readContext;
+    f->Write = __write2file;
 
 
     if(strlen(filepath) == 0)
@@ -23,14 +24,14 @@ cFile open_file(const char *filepath) {
 }
 
 char *__readContext(cFile *f) {
-    f->data_length = (long)get_content_length(f) + 1;
+    f->data_length = (long)__get_content_length(f) + 1;
     f->data = (char *)malloc(f->data_length);
     fread(f->data, 1, f->data_length, f->fd);
 
-    return f->data_length;
+    return f->data;
 }
 
-static size_t get_content_length(cFile *f) {
+static size_t __get_content_length(cFile *f) {
     fseek(f->fd, 0L, SEEK_END);
     size_t sz = ftell(f->fd);
     fseek(f->fd, 0L, SEEK_SET);
@@ -38,10 +39,16 @@ static size_t get_content_length(cFile *f) {
     return sz;
 }
 
-int write2file(cFile *f, const char *data) {
+int __write2file(cFile *f, const char *data) {
     if(f == NULL || f->fd == NULL)
         return 0;
 
     fwrite(data, sizeof(char), strlen(data), f->fd);
     return 1;
+}
+
+void __Closefile(cFile *f) {
+    if(f->path == NULL) {
+
+    }
 }

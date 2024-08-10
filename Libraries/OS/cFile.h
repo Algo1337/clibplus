@@ -13,15 +13,15 @@ typedef struct cFile {
     char    *data;
     long    data_length;
 
-    char *  (*Read)     (cFile *f);
-    int     (*Write)    (cFile *f, const char *data);
-    void *  (*Close)    (cFile *c);
+    char *  (*Read)     (struct cFile *f);
+    int     (*Write)    (struct cFile *f, const char *data);
+    void *  (*Close)    (struct cFile *f);
 } cFile;
 
 //
 //      Open a file
 //
-cFile   *open_file(const char *filepath);
+cFile   *Openfile(const char *filepath);
 
 //
 //      Get file content
@@ -31,16 +31,16 @@ char    *__readContext(cFile *f);
 //
 //      Get content length
 //
-static size_t  get_content_length(cFile *f);
+static size_t  __get_content_length(cFile *f);
 
 //
 //      Write To File
 //
-int     *__write2file(cFile *f, const char *data);
+int     __write2file(cFile *f, const char *data);
 
 //
 //      Clean up the structure
 //
-void    __KillcFile(cFile *f);
+void    __Closefile(cFile *f);
 
 #endif

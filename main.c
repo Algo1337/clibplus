@@ -19,7 +19,8 @@ int main() {
             
         JsonField *field = (JsonField *)json->keys[i];
         if(strcmp(field->STRUCTURE_PATH->data, "/") == 0)
-            printf("STRUCTURE: %s | Key: %s | Value: %s\n", field->STRUCTURE_PATH->data, field->Key->data, field->Value->data);
+            printf("STRUCTURE: %s | Key: %s | Value: %s\n", 
+                field->STRUCTURE_PATH->data, field->Key->data, field->Value->data);
     }
 
     free(c);

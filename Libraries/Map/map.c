@@ -151,8 +151,17 @@ Map *decode_json(const char *data) {
         // Key/Value Found
         if(a->idx == 2) {
             str *key = string(args[0]);
+            key->Utils(key, _TRIM_AT_IDX, 0);
+            key->Utils(key, _TRIM_AT_IDX, strlen(key->data) - 1);
+
             str *value = string(args[1]);
             value->Utils(value, _STRIP);
+            value->Utils(value, _TRIM, ',');
+            
+            if(strstr(value->data, "\"") > 0) {
+                value->Utils(value, _TRIM_AT_IDX, 0);
+                value->Utils(value, _TRIM_AT_IDX, strlen(value->data) - 1);
+            }
 
             // Value Datatype Checking
             if(strcmp(value->data, "{") == 0) {

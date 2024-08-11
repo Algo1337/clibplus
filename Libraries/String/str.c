@@ -39,6 +39,7 @@ void *__StrUtils(str *s, strTools mode, ...) {
 		case _STRIP:            { return (void *)__Strip(s); }
         case _STRIPCHAR2END:    { return (void *)__StripCh2End(s, get_va_arg_char(args)); }
 		case _TRIM:             { return (void *)__Trim(s, get_va_arg_char(args)); }
+        case _TRIM_AT_IDX:      { return (void *)__Trim_By_Idx(s, get_va_arg_char(args)); }
 		case _COUNTCHAR:        { return (void *)__CountChar(s, get_va_arg_char(args)); }
 		case _COUNTSTR:         { return (void *)__CountSubstr(s, get_va_arg_str(args)); }
 		case _STARTSWITH:       { return (void *)__StartsWith(s, get_va_arg_str(args)); }
@@ -157,9 +158,33 @@ long __Trim(str *s, const char delim) {
     memset(buffer, '\0', strlen(s->data) + 1);
     
     int start = 0;
-    for(int i = 0; i < strlen(s->data); i++)
-        if(s->data[i] != delim) 
-            strncat(buffer, &s->data[start++], sizeof(char));
+    for(int i = 0; i < strlen(s->data); i++) {
+        if(s->data[i] != delim) {
+            strncat(buffer, &s->data[start], sizeof(char));
+            start++;
+        }
+    }
+
+    int modify_chk = strlen(buffer) < strlen(s->data) ? 1 : 0;
+    s->data = strdup(buffer);
+    free(buffer);
+
+    return modify_chk;
+}
+
+long __Trim_By_Idx(str *s, int idx) {
+    if(s->data == NULL || strlen(s->data) == 0)
+        return 0;
+
+    char *buffer = (char *)alloc(strlen(s->data) + 1);
+    memset(buffer, '\0', strlen(s->data) + 1);
+    
+    int start = 0;
+    for(int i = 0; i < strlen(s->data); i++) {
+        if(i != idx) {
+            strncat(buffer, &s->data[i], sizeof(char));
+        }
+    }
 
     int modify_chk = strlen(buffer) < strlen(s->data) ? 1 : 0;
     s->data = strdup(buffer);
@@ -174,7 +199,7 @@ long __CountChar(str *s, const char ch) {
 
     long count = 0;
     for(int i = 0; i < s->idx; i++) {
-        if(strcmp(&s->data[i], &ch) == 0)
+        if(s->data[i] == ch)
             count++;
     }
 

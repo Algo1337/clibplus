@@ -25,6 +25,7 @@ typedef enum strTools {
     _STRIP,         // Strips whitespaces from the string
     _STRIPCHAR2END, // Strip a string from a char to the end of the strip
     _TRIM,          // Trim a char from the string
+    _TRIM_AT_IDX,   // Trim a char from the string at idx
     _SPLIT,         // Split a string into an array using a string delim
     _SPLITCHAR,     // Split a string into an array using a char delim
     _TOLOWERCASE,   // Convert an entire string to lowercase
@@ -91,6 +92,11 @@ long     __StripCh2End(str *s, const char start);
 //      Trim a char from string.
 //
 long    __Trim(str *s, const char delim);
+
+//
+//      Trim a char @ idx
+//
+long    __Trim_By_Idx(str *s, int idx);
 
 //
 //      Count the amount of matches comparing a char

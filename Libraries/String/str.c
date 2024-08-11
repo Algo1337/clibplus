@@ -10,6 +10,7 @@ str *string(const char *data) {
     str *s = (str *)malloc(sizeof(str));
     
     s->Utils = __StrUtils;
+    s->SplitCh = __SplitChar;
     s->Kill = CleanString;
 
     // Accepting NULL as a parameter
@@ -17,8 +18,10 @@ str *string(const char *data) {
         return s;
 
     // Validate String
-    if(strlen(data) > 0)
+    if(strlen(data) > 0) {
         s->data = strdup((char *)*&data);
+        s->idx = strlen(data);
+    }
 
     return s;
 }
@@ -32,7 +35,9 @@ void *__StrUtils(str *s, strTools mode, ...) {
 	switch(mode) {
         case _NEW:              { return (void *)__newString(s, get_va_arg_str(args)); }
         case _APPEND:           { return (void *)__add2str(s, get_va_arg_str(args)); }
+        case _FINDCHAR:         { return (void *)__findChar(s, get_va_arg_char(args)); }
 		case _STRIP:            { return (void *)__Strip(s); }
+        case _STRIPCHAR2END:    { return (void *)__StripCh2End(s, get_va_arg_char(args)); }
 		case _TRIM:             { return (void *)__Trim(s, get_va_arg_char(args)); }
 		case _COUNTCHAR:        { return (void *)__CountChar(s, get_va_arg_char(args)); }
 		case _COUNTSTR:         { return (void *)__CountSubstr(s, get_va_arg_str(args)); }
@@ -42,7 +47,7 @@ void *__StrUtils(str *s, strTools mode, ...) {
 		case _ISLOWERCASE:      { return (void *)__IsLowercase(s); }
         case _TOUPPERCASE:      { return (void *)__ToUppercase(s); }
         case _TOLOWERCASE:      { return (void *)__ToLowercase(s); }
-        // case _SPLIT:            { return (void *)__SplitChar(s, get_va_arg_char(args)); }
+        case _SPLIT:            { return (void *)__Split(s, get_va_arg_str(args)); }
         case _SPLITCHAR:        { return (void *)__SplitChar(s, get_va_arg_char(args)); }
         case _REPLACE:          { 
             char *find = get_va_arg_str(args);
@@ -58,6 +63,14 @@ void *__StrUtils(str *s, strTools mode, ...) {
 
     va_end(args);
 	return 0;
+}
+
+long __findChar(str *s, const char ch) {
+    for(int i = 0; i < s->idx; i++)
+        if(s->data[i] == ch)
+            return i;
+
+    return 0;
 }
 
 long __newString(str *s, const char *data) {
@@ -89,9 +102,6 @@ long __add2str(str *s, const char *data) {
 }
 
 long __Strip(str *s) {
-    if(s->data == NULL || strlen(s->data) == 0)
-        return 0;
-
     char *buffer = (char *)alloc(strlen(s->data) + 1);
     
     int start = 0;
@@ -117,15 +127,39 @@ long __Strip(str *s) {
     return (start > 0 && end < strlen(s->data) ? 1 : 0);
 }
 
+long __StripCh2End(str *s, const char start) {
+    char *new = (char *)alloc(1);
+    
+    int i = 0;
+    while(i < s->idx) {
+        if(s->data[i] == start)
+            break;
+
+        
+        strncat(new, &s->data[i], sizeof(char));
+        i++;
+        new = (char *)realloc(new, i + 1);
+        new[i] = '\0';
+    }
+
+    free(s->data);
+    s->data = strdup(new);
+    s->idx = strlen(new);
+
+    return 1;
+}
+
 long __Trim(str *s, const char delim) {
     if(s->data == NULL || strlen(s->data) == 0)
         return 0;
 
     char *buffer = (char *)alloc(strlen(s->data) + 1);
+    memset(buffer, '\0', strlen(s->data) + 1);
     
+    int start = 0;
     for(int i = 0; i < strlen(s->data); i++)
-        if(s->data[i] != delim)
-            strncat(buffer, &s->data[i], sizeof(char));
+        if(s->data[i] != delim) 
+            strncat(buffer, &s->data[start++], sizeof(char));
 
     int modify_chk = strlen(buffer) < strlen(s->data) ? 1 : 0;
     s->data = strdup(buffer);
@@ -135,13 +169,14 @@ long __Trim(str *s, const char delim) {
 }
 
 long __CountChar(str *s, const char ch) {
-    if(s->data == NULL || strlen(s->data) == 0)
-        return 0;
+    // if(s->data == NULL || ch == '\0')
+    //     return 0;
 
     long count = 0;
-    for(int i = 0; i < strlen(s->data); i++)
-        if(s->data[i] == ch)
+    for(int i = 0; i < s->idx; i++) {
+        if(strcmp(&s->data[i], &ch) == 0)
             count++;
+    }
 
     return count;
 }
@@ -296,12 +331,30 @@ long __Replace(str *s, const char *find, const char *replacement) {
     return 1;
 }
 
+char **__Split(str *s, const char *delim) {
+    char **arr = (char **)alloc2(1);
+
+    int i = 0, idx = 0;
+    char *token = strtok(s->data, delim);
+    while(token != NULL) {
+        arr[i] = (char *)alloc(strlen(token) + 1);
+        strcpy(arr[i], token);
+        token = strtok(NULL, delim);
+        i++;
+        arr = (char **)realloc(arr, (sizeof(char *) * i) + 1);
+    }
+    arr[i] = NULL;
+
+    return arr;
+}
+
 char **__SplitChar(str *s, const char delim) {
     if(s->data == NULL || strlen(s->data) == 0)
         return 0;
 
     long args_count = __CountChar(s, delim);
     char **arr = (char **)alloc2(args_count + 1);
+    memset(arr, '\0', (sizeof(char *) * args_count) + 1);
     int idx = 0;
     int ch_count = 0;
 
@@ -319,20 +372,23 @@ char **__SplitChar(str *s, const char delim) {
         }
 
         strncat(arr[idx], &s->data[i], sizeof(char));
-        arr[idx] = (char *)realloc(arr[idx], ch_count + 1);
+        arr[idx] = (char *)realloc(arr[idx], (sizeof(char *) * ch_count) + 1);
+        arr[idx][ch_count] = '\0';
+        arr[idx + 1] = NULL;
         ch_count++;
     }
+    arr[idx + 1] = NULL;
 
     return arr;
 }
 
 void *__Join(str *s, const char **arr, const char delim) {
-    if(arr == NULL || delim == '\0')
-        return 0;
-
     int i = 0;
     while(arr[i] != NULL)
     {
+        if(arr[i] == NULL)
+            break;
+            
         s->data = (char *)realloc(s->data, s->idx + strlen(arr[i]) + 1);
         strncat(s->data, arr[i], strlen(arr[i]));
         if(arr[ i + 1] != NULL)

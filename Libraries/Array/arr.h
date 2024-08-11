@@ -4,7 +4,7 @@
 #define ARR_H
 
 #include "../global.h"
-#include "../global_memory.h"
+#include "../String/str.h"
 
 typedef enum ArrTools {
     __NONE,
@@ -46,6 +46,11 @@ void    *__ArrUtils(Arr *a, ArrTools mode, ...);
 //      Convert the current array into a string
 //
 char    *__toStr(Arr *a);
+
+//
+//
+//
+char    *__arr2str(Arr *a, const char delim);
 
 //
 //      Get Element By Idx

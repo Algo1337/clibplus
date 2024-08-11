@@ -17,6 +17,18 @@ Map *create_map() {
     return m;
 }
 
+Map *create_json_map() {
+    Map *m = (Map *)malloc(sizeof(Map));
+    m->idx = 0;
+
+    m->keys = (void **)malloc(sizeof(JsonField *) * 1);
+    memset(m->keys, '\0', sizeof(JsonField *) * 1);
+
+    m->Utils = __MapUtils;
+
+    return m;
+}
+
 void *__MapUtils(Map *m, MapTools mode, ...) {
     int first = 1, sec = 2;
 	va_list args;
@@ -39,11 +51,25 @@ void *__MapUtils(Map *m, MapTools mode, ...) {
 	return 0;
 }
 
+void *__AppendJSONField(Map *m, const char *structure, const char *key, const char *value) {
+    if(m == NULL || key == NULL || value == NULL)
+        return NULL;
+        
+    JsonField *field = (JsonField *)malloc(sizeof(JsonField));
+    field->STRUCTURE_PATH = string(structure);
+    field->Key = string(key);
+    field->Value = string(value);
+    
+    m->keys[m->idx] = field;
+    m->idx++;
+    m->keys = (void **)realloc(m->keys, sizeof(JsonField *) * m->idx + 1);
+}
+
 void *__AppendField(Map *m, const char *key, const char *value) {
     if(m == NULL || key == NULL || value == NULL)
         return NULL;
         
-    Key *k = (Key *)malloc(sizeof(Key *));
+    Key *k = (Key *)malloc(sizeof(Key));
     k->name = strdup(key);
     k->value = strdup(value);
     
@@ -97,6 +123,52 @@ char *encode_json(Map *m) {
 
 }
 
-Map *decode_json(Map *m, const char *data) {
+Map *decode_json(const char *data) {
+    Map *json = create_json_map();
+    str *raw_json = string(data);
 
+    char **lines = (char **)raw_json->Utils(raw_json, _SPLIT, "\n");
+    int line_count = count_arr(lines);
+
+    char *start[] = {"parent", NULL};
+    Arr *structure_path = Array(start);
+    str *full_path = string("/");
+
+    for(int i = 0; i < line_count; i++) {
+        str *line = string(lines[i]);
+        line->Utils(line, _STRIP);
+        if((long)line->Utils(line, _COUNTCHAR, '/') > 0)
+            line->Utils(line, _STRIPCHAR2END, '/');
+
+        if(strstr(line->data, "}")) {
+            structure_path->Utils(structure_path, __REMOVE_BY_IDX, structure_path->idx - 1);
+            full_path = string("/");
+        }
+
+        char **args = (char **)line->Utils(line, _SPLIT, ":");
+        Arr *a = Array(args);
+
+        // Key/Value Found
+        if(a->idx == 2) {
+            str *key = string(args[0]);
+            str *value = string(args[1]);
+            value->Utils(value, _STRIP);
+
+            // Value Datatype Checking
+            if(strcmp(value->data, "{") == 0) {
+                structure_path->Utils(structure_path, __APPEND, key->data);
+                full_path->data = __arr2str(structure_path, '/');
+                continue;
+            }
+
+            __AppendJSONField(json, full_path->data, key->data, value->data);
+            free(key);
+            free(value);
+        }
+        free(a);
+        free(args);
+        free(line);
+    }
+
+    return json;
 }

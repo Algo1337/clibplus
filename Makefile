@@ -26,6 +26,6 @@ build:
 	Map/*.c \
 	Net/*.c \
 	OS/*.c \
-	-lssl -lcrypto -g3 -ggdb -w; \
+	-lssl -lcrypto -g3 -ggdb; \
 	ar rcs clib+.a *.o; rm *.o; mv clib+.a /usr/local/lib/libclib+.a
 	echo -ne '\x1b[32m[ + ]\x1b[0m Compile your program using -lclib+ argument\n'

@@ -13,8 +13,9 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-#include "../c_types.h"
 #include "ssl.h"
+#include "../global.h"
+#include "../c_types.h"
 
 typedef struct HTTPClient {
     char        *hostname;

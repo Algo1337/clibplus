@@ -26,8 +26,9 @@ cFile *Openfile(const char *filepath) {
 char *__readContext(cFile *f) {
     f->data_length = (long)__get_content_length(f) + 1;
     f->data = (char *)malloc(f->data_length);
-    fread(f->data, 1, f->data_length, f->fd);
+    memset(f->data, '\0', f->data_length);
 
+    fread(f->data, 1, f->data_length, f->fd);
     return f->data;
 }
 
@@ -48,7 +49,6 @@ int __write2file(cFile *f, const char *data) {
 }
 
 void __Closefile(cFile *f) {
-    if(f->path == NULL) {
-
-    }
+    if(f->path == NULL)
+        free(f->path);
 }

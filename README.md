@@ -69,7 +69,7 @@ cd C-System-*; make build; make cp
 
 ```
 
-<clibs/c_types.h>           : -lctypes
-<clibs/Net/Socket.h>      : -lctypes
+<clibs/c_types.h>         : -lctypes
+<clibs/Net/socket.h>      : -lctypes
 <clibs/Net/request.h>     : -lssl -lcrypto
 ```

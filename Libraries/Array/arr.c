@@ -17,10 +17,11 @@ Arr *Array(char **c_arr) {
         int count = count_arr(c_arr);
         a->arr = (char **)alloc2(count);
         for(int i = 0; i < count; i++) {
-            if(c_arr[i] != NULL && strlen(c_arr[i]) > 0) {
-                a->arr[i] = strdup(c_arr[i]);
-                a->idx++;
-            }
+            if(c_arr[i] == NULL)
+                break;
+                
+            a->arr[i] = strdup(c_arr[i]);
+            a->idx++;
         }
         return a;
     }
@@ -67,6 +68,26 @@ char *__toStr(Arr *a) {
     while(a->arr[i] != NULL) {
         strncat(buff, a->arr[i], strlen(a->arr[i]));
         strcat(buff, ", ");
+        i++;
+    }
+
+    strcat(buff, "]");
+
+    return buff;
+}
+
+
+char *__arr2str(Arr *a, const char delim) {
+    int i = 0, count = 0;
+    while(a->arr[i] != NULL)
+        count += strlen(a->arr[i++]);
+
+    char *buff = (char *)alloc(count + a->idx + 1);
+    strcat(buff, "[");
+    i = 0;
+    while(a->arr[i] != NULL) {
+        strncat(buff, a->arr[i], strlen(a->arr[i]));
+        strcat(buff, &delim);
         i++;
     }
 

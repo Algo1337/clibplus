@@ -4,31 +4,32 @@
 #define STR_H
 
 #include "../global.h"
-#include "../global_memory.h"
 
 typedef enum strTools {
     _NONE,
 
     // Checking Tools
-    _COUNTCHAR,
-    _COUNTSTR,
-    _STARTSWITH,
-    _ENDSWITH,
-    _ISLOWERCASE,
-    _ISUPPERCASE,
+    _FINDCHAR,      // Find a char in string 
+    _COUNTCHAR,     // Count a char in string
+    _COUNTSTR,      // Count a substr in string
+    _STARTSWITH,    // check if string starts with a string
+    _ENDSWITH,      // check if a string ends with a string
+    _ISLOWERCASE,   // check if a string is all lowercase
+    _ISUPPERCASE,   // check if a string is all uppercase
 
     // Modifying Tools
-    _NEW,
-    _APPEND,
-    _REMOVE,
-    _REPLACE,
-    _STRIP,
-    _TRIM,
-    _SPLIT,
-    _SPLITCHAR,
-    _TOLOWERCASE,
-    _TOUPPERCASE,
-    _JOIN
+    _NEW,           // Overwrite new data
+    _APPEND,        // Append a string
+    _REMOVE,        // Remove a substr
+    _REPLACE,       // Replace a substr in the string
+    _STRIP,         // Strips whitespaces from the string
+    _STRIPCHAR2END, // Strip a string from a char to the end of the strip
+    _TRIM,          // Trim a char from the string
+    _SPLIT,         // Split a string into an array using a string delim
+    _SPLITCHAR,     // Split a string into an array using a char delim
+    _TOLOWERCASE,   // Convert an entire string to lowercase
+    _TOUPPERCASE,   // Convert an entire string to uppercase
+    _JOIN           // Merge an array into a string
 } strTools;
 
 typedef struct str {
@@ -37,6 +38,8 @@ typedef struct str {
 
     // String Utilities
     void *  (*Utils) (struct str *s, strTools mode, ...);
+
+    char ** (*SplitCh) (struct str *s, const char ch);
 
     // Clean up the structure
     void    (*Kill)  (struct str *s);
@@ -75,10 +78,14 @@ long    __newString(str *s, const char *data);
 //
 long    __add2str(str *s, const char *data);
 
+long __findChar(str *s, const char ch);
+
 //
 //      Strip whitespaces from front and end of a string
 // 
 long     __Strip(str *s);
+
+long     __StripCh2End(str *s, const char start);
 
 //
 //      Trim a char from string.
@@ -129,6 +136,11 @@ long    __ToLowercase(str *s);
 //      Replace a Substring
 //
 long    __Replace(str *s, const char *find, const char *replace);
+
+//
+//
+//
+char    **__Split(str *s, const char *delim);
 
 //
 //      Split a string

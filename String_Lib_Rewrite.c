@@ -127,17 +127,36 @@ char **split_string_w_char(String *s, const char delim) {
     return arr;
 }
 
+char *replace_string(String *s, const char *find, const char *replace) {
+
+    char *new = (char *)alloc(s->idx + strlen(replace) + 1);
+    int string_at = findstr(s, find);
+    int i = 0;
+    while(i < s->idx) {
+        if(i >= string_at && i < (string_at + strlen(find))) {
+            printf("ADDED\n");
+            strncat(new, replace, strlen(replace));
+            i += strlen(find);
+            continue;
+        }
+
+        strncat(new, &s->data[i], sizeof(char));
+        i++;
+    }
+
+    return new;
+}
+
 int main() {
     String *n = string(NULL);
     n = append2str(n, "NEW\n");
     n = append2str(n, "BEEP\n");
     n = append2str(n, "GEE\n");
 
-    char **arr = split_string_w_char(n, '\n');
-    int i = 0;
-    while(arr[i] != NULL)
-        printf("%s\n", arr[i++]);
-    
-    
+    long t = findstr(n, "BEEP");
+    printf("%ld '%s'\n", t, n->data);
+
+    char *test = replace_string(n, "BEEP", "LUL");
+    printf("%s\n", test);
     return 0;
 }

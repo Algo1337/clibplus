@@ -22,6 +22,7 @@ typedef enum strTools {
     _APPEND,        // Append a string
     _REMOVE,        // Remove a substr
     _REPLACE,       // Replace a substr in the string
+    _REPLACECHAR,   // Replace a char in the string
     _STRIP,         // Strips whitespaces from the string
     _STRIPCHAR2END, // Strip a string from a char to the end of the strip
     _TRIM,          // Trim a char from the string
@@ -79,13 +80,19 @@ long    __newString(str *s, const char *data);
 //
 long    __add2str(str *s, const char *data);
 
-long __findChar(str *s, const char ch);
+//
+//      Find a char in string
+//
+long    __findChar(str *s, const char ch);
 
 //
 //      Strip whitespaces from front and end of a string
 // 
 long     __Strip(str *s);
 
+//
+//      Strip a string from char to end of string
+//
 long     __StripCh2End(str *s, const char start);
 
 //
@@ -142,6 +149,16 @@ long    __ToLowercase(str *s);
 //      Replace a Substring
 //
 long    __Replace(str *s, const char *find, const char *replace);
+
+//
+//
+//
+long __ReplaceCharWithStr(str *s, const char ch, const char *r);
+
+//
+//
+//
+long __ReplaceChar(str *s, const char ch, const char r);
 
 //
 //

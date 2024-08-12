@@ -3,9 +3,9 @@
 #include <stdlib.h>
 
 // This Lib Currently Cannot Be Threaded
-#include <clibs/c_types.h>
+#include <clib/Array/dim.h>
 
-int run_dim_arr() {
+int main() {
     // Create an Instance of 2Dimensionial Array
     DimArray *a = create_arr(2);
 

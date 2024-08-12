@@ -79,19 +79,20 @@ char *__toStr(Arr *a) {
 
 char *__arr2str(Arr *a, const char delim) {
     int i = 0, count = 0;
-    while(a->arr[i] != NULL)
-        count += strlen(a->arr[i++]);
+    while(a->arr[i] != NULL) {
+        if(a->arr[i] == NULL)
+            break;
+        count += strlen(a->arr[i]);
+        i++;
+    }
 
     char *buff = (char *)alloc(count + a->idx + 1);
-    strcat(buff, "[");
     i = 0;
     while(a->arr[i] != NULL) {
         strncat(buff, a->arr[i], strlen(a->arr[i]));
         strcat(buff, &delim);
         i++;
     }
-
-    strcat(buff, "]");
 
     return buff;
 }

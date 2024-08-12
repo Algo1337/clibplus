@@ -123,6 +123,8 @@ char *encode_json(Map *m) {
 
 }
 
+
+//brb
 Map *decode_json(const char *data) {
     Map *json = create_json_map();
     str *raw_json = string(data);
@@ -137,8 +139,6 @@ Map *decode_json(const char *data) {
     for(int i = 0; i < line_count; i++) {
         str *line = string(lines[i]);
         line->Utils(line, _STRIP);
-        if((long)line->Utils(line, _COUNTCHAR, '/') > 0)
-            line->Utils(line, _STRIPCHAR2END, '/');
 
         if(strstr(line->data, "}")) {
             structure_path->Utils(structure_path, __REMOVE_BY_IDX, structure_path->idx - 1);
@@ -153,21 +153,29 @@ Map *decode_json(const char *data) {
             str *key = string(args[0]);
             key->Utils(key, _TRIM_AT_IDX, 0);
             key->Utils(key, _TRIM_AT_IDX, strlen(key->data) - 1);
+            key->Utils(key, _STRIP);
 
             str *value = string(args[1]);
-            value->Utils(value, _STRIP);
             value->Utils(value, _TRIM, ',');
-            
-            if(strstr(value->data, "\"") > 0) {
-                value->Utils(value, _TRIM_AT_IDX, 0);
-                value->Utils(value, _TRIM_AT_IDX, strlen(value->data) - 1);
-            }
+            value->Utils(value, _STRIP);
 
             // Value Datatype Checking
             if(strcmp(value->data, "{") == 0) {
                 structure_path->Utils(structure_path, __APPEND, key->data);
                 full_path->data = __arr2str(structure_path, '/');
                 continue;
+            } else if (value->data[value->idx - 2] == '{') {
+                structure_path->Utils(structure_path, __APPEND, key->data);
+                full_path->data = __arr2str(structure_path, '/');
+                continue;
+            }
+            
+            if(strstr(value->data, "\"") > 0) {
+                value->Utils(value, _TRIM_AT_IDX, 0);
+                value->Utils(value, _TRIM_AT_IDX, strlen(value->data) - 1);
+            } else if(value->data[0] == '[' && value->data[strlen(value->data) - 1] == ']') {
+                value->Utils(value, _TRIM_AT_IDX, 0);
+                value->Utils(value, _TRIM_AT_IDX, strlen(value->data) - 1);
             }
 
             __AppendJSONField(json, full_path->data, key->data, value->data);

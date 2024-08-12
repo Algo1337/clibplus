@@ -55,6 +55,7 @@ void *__StrUtils(str *s, strTools mode, ...) {
             char *replace = get_va_arg_str(args);
             return (void *)__Replace(s, find, replace); 
         }
+        case _REPLACECHAR:      { return (void *)__ReplaceChar(s, get_va_arg_char(args), get_va_arg_char(args)); }
         case _JOIN:             { 
             const char **arr = (const char **)get_va_args_dptr_arr(args);
             char delim = get_va_arg_char(args);
@@ -133,6 +134,7 @@ long __StripCh2End(str *s, const char start) {
     
     int i = 0;
     while(i < s->idx) {
+        printf("%d %ld\n", i, s->idx);
         if(s->data[i] == start)
             break;
 
@@ -140,7 +142,8 @@ long __StripCh2End(str *s, const char start) {
         strncat(new, &s->data[i], sizeof(char));
         i++;
         new = (char *)realloc(new, i + 1);
-        new[i] = '\0';
+        if(new)
+            break;
     }
 
     free(s->data);
@@ -321,11 +324,48 @@ long __ToLowercase(str *s) {
     return chk;
 }
 
-long __Replace(str *s, const char *find, const char *replacement) {
-    if(s->data == NULL || strlen(s->data) == 0)
-        return 0;
+long __ReplaceChar(str *s, const char ch, const char r) {
+    printf("%c | %c", ch, r);
+    char *new = (char *)alloc(strlen(s->data) + 1);
+    int i = 0;
+    while(i < s->idx) {
+        if(s->data[i] == ch) {
+            // printf("ADDING")
+            strncat(new, &r, sizeof(char));
+            i++;
+            continue;
+        }
 
-    printf("%s | %s | %s\n", s->data, find, replacement);
+        strncat(new, &s->data[i], sizeof(char));
+        i++;
+    }
+
+    free(s->data);
+    s->data = strdup(new);
+    s->idx = strlen(s->data) + 1;
+}
+
+long __ReplaceCharWithStr(str *s, const char ch, const char *r) {
+    long c = __CountChar(s, ch) * strlen(r) + strlen(s->data);
+    char *new = (char *)alloc(c);
+
+    for(int i = 0; i < strlen(s->data); i++) {
+        if(s->data[i] == ch) {
+            strncat(new, r, strlen(r));
+            continue;
+        }
+
+        strncat(new, &s->data[i], sizeof(char));
+    }
+
+    free(s->data);
+    s->data = new;
+    s->idx = c;
+
+    return 1;
+}
+
+long __Replace(str *s, const char *find, const char *replacement) {
     long sz = strlen(s->data);
     if(strlen(replacement) > strlen(find))
         sz = strlen(s->data) + (strlen(replacement) - strlen(find));

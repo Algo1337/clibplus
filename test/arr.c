@@ -2,9 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <clibs/c_types.h>
+#include <clib/Array/arr.h>
 
-int run_arr() {
+int main() {
     char *arr[] = {"TEST", "FAG"};
 
     // Create an array instance providing a pre-made array
@@ -36,7 +36,8 @@ int run_arr() {
     char *test = a->Utils(a, __GET_ELEMENT, 3);
     printf("__GET_ELEMENT: %s\n", test);
 
-    printf("InArray: %d | Elements: %d\n", (int)a->Utils(a, __IN_ARRAY, "Is"), count_arr(a->arr));
+    long c = (long)a->Utils(a, __IN_ARRAY, "Is");
+    printf("InArray: %ld | Elements: %d\n", c, (int)count_arr(a->arr));
 
     // Display all elements
     for(int i = 0; i < a->idx; i++) {

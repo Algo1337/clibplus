@@ -9,8 +9,8 @@
 /*
     Basic Web Request
 */
-int main() {
-    HTTPClientResponse *r = RequestURL("ipwho.is", "/8.8.4.4");
+int main(int argc, char *argv[]) {
+    HTTPClientResponse *r = RequestURL("ipwho.is", argv[1]);
     printf("%s", r->body->data);
 
     return 0;

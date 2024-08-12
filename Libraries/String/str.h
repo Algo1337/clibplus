@@ -11,6 +11,7 @@ typedef enum strTools {
 
     // Checking Tools
     _FINDCHAR,      // Find a char in string 
+    _FINDSUBSTR,    // Find a sub string provided in string
     _COUNTCHAR,     // Count a char in string
     _COUNTSTR,      // Count a substr in string
     _STARTSWITH,    // check if string starts with a string
@@ -72,44 +73,18 @@ str     *string(const char *data);
 void    *__StrUtils(str *s, strTools mode, ...);
 
 //
-//      Create a new string
+//      Start/Reset the current string
 //
-long    __newString(str *s, const char *data);
+long     __newString(str *s, const char *data);
 
 //
-//      Append To String
+//      Append data to the current string
 //
-long    __add2str(str *s, const char *data);
+str    *__add2str(str *s, const char *data);
 
-//
-//      Find a char in string
-//
-long    __findChar(str *s, const char ch);
-
-//
-//      Find a substr in the current string
-//
-long    __findSubstr(str *s, const char *substr);
-
-//
-//      Strip whitespaces from front and end of a string
-// 
-long     __Strip(str *s);
-
-//
-//      Strip a string from char to end of string
-//
-long     __StripCh2End(str *s, const char start);
-
-//
-//      Trim a char from string.
-//
-long    __Trim(str *s, const char delim);
-
-//
-//      Trim a char @ idx
-//
-long    __Trim_By_Idx(str *s, int idx);
+//////////////////////////////////////
+//     == [ CHAR FUNCTIONS ] ==     //
+//////////////////////////////////////
 
 //
 //      Count the amount of matches comparing a char
@@ -117,65 +92,108 @@ long    __Trim_By_Idx(str *s, int idx);
 long    __CountChar(str *s, const char ch);
 
 //
-//      Count the amount of matches comparing a sub string
+//      Find a first matching char in string
+//
+long    findchar(str *s, const char ch);
+
+//
+//      Find a char @ the matched count
+//
+long    findchar_at_count(str *s, const char ch, int count);
+
+//
+//      Remove whitespaces
+//
+long    __Strip(str *s);
+
+//
+//      Remove data from char to end of string
+//
+long    __StripCh2End(str *s, const char start);
+
+//
+//      Remove a char from string
+//
+long    __Trim(str *s, const char delim);
+
+//
+//      Remove a char at idx in the current string
+//
+long    __Trim_By_Idx(str *s, int idx);
+
+//////////////////////////////////////
+//    == [ STRING FUNCTIONS ] ==    //
+//////////////////////////////////////
+
+//
+//      Find a substring in the current string
+//
+long    __findSubstr(str *s, const char *substr);
+
+//
+//      Count the amount of comparison matching the substring provided
 //
 long    __CountSubstr(str *s, const char *substr);
 
-// 
-//      Check if a string starts with a sub string
+//
+//      Get a substring from start to end position of the string
+//
+char    *get_substr(str *s, int start, int end);
+
+//
+//      Check if the string starts with a substring provided
 //
 long    __StartsWith(str *s, const char *str);
 
 //
-//      Check if a string ends with a sub string
+//      Check if the string ends with a substring provided
 //
 long    __EndsWith(str *s, const char *str);
 
 //
-//      Check if a string contains all uppercase character
+//      Check if a string is all uppercase
 //
 long    __IsUppercase(str *s);
 
 //
-//      Check if a string contains all lowercase charaters
+//      Check if a string is all lowercase
 //
 long    __IsLowercase(str *s);
 
 //
-//      Convert all lowercase characters to uppercase
+//      Convert the string to all uppercase characters
 //
 long    __ToUppercase(str *s);
 
 //
-//      Convert all uppercase characters to lowercase
+//      Convert the string to all lowercase characters
 //
 long    __ToLowercase(str *s);
 
 //
-//      Replace a Substring
+//      Replace a char
 //
-long    __Replace(str *s, const char *find, const char *replace);
+long    __ReplaceChar(str *s, const char ch, const char r);
 
 //
+//      Convert a char with a string
 //
-//
-long __ReplaceCharWithStr(str *s, const char ch, const char *r);
+long    __ReplaceCharWithStr(str *s, const char ch, const char *r);
 
 //
+//      Replace a string
 //
-//
-long __ReplaceChar(str *s, const char ch, const char r);
+char    *replace_string(str *s, const char *find, const char *replace);
 
 //
-//
+//      Split a string using a string delim
 //
 char    **__Split(str *s, const char *delim);
 
 //
-//      Split a string
+//      Split a string using a char delim
 //
-char    **__SplitChar(str *s, const char delim);
-
+char    **split_string_w_char(str *s, const char delim);
 
 //
 //      Append all element in the array provided to string with the delim between each

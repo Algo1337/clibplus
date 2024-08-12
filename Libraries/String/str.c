@@ -8,20 +8,17 @@
 
 str *string(const char *data) {
     str *s = (str *)malloc(sizeof(str));
-    
-    s->Utils = __StrUtils;
-    s->SplitCh = __SplitChar;
-    s->Kill = CleanString;
 
-    // Accepting NULL as a parameter
-    if(data == NULL)
+    if(data == NULL || strlen(data) == 0)
+    {
+        s->data = (char *)alloc(1);
+        s->idx = 0;
         return s;
-
-    // Validate String
-    if(strlen(data) > 0) {
-        s->data = strdup((char *)*&data);
-        s->idx = strlen(data);
     }
+
+    s->data = (char *)alloc(strlen(data) + 1);
+    strcpy(s->data, data);
+    s->idx = (long)strlen(data) + 1;
 
     return s;
 }
@@ -30,12 +27,19 @@ str *string(const char *data) {
 void *__StrUtils(str *s, strTools mode, ...) {
     int first = 1, sec = 2;
 	va_list args;
-    va_start(args, sec);
+    va_start(args, first);
 
 	switch(mode) {
-        case _NEW:              { return (void *)__newString(s, get_va_arg_str(args)); }
-        case _APPEND:           { return (void *)__add2str(s, get_va_arg_str(args)); }
-        case _FINDCHAR:         { return (void *)__findChar(s, get_va_arg_char(args)); }
+        case _NEW:              { 
+            __newString(s, get_va_arg_str(args));
+            break;
+        }
+        case _APPEND: { 
+            __add2str(s, get_va_arg_str(args));
+            break;
+        }
+        case _FINDCHAR:         { return (void *)findchar(s, get_va_arg_char(args)); }
+        case _FINDSUBSTR:       { return (void *)__findSubstr(s, get_va_arg_str(args)); }
 		case _STRIP:            { return (void *)__Strip(s); }
         case _STRIPCHAR2END:    { return (void *)__StripCh2End(s, get_va_arg_char(args)); }
 		case _TRIM:             { return (void *)__Trim(s, get_va_arg_char(args)); }
@@ -49,11 +53,11 @@ void *__StrUtils(str *s, strTools mode, ...) {
         case _TOUPPERCASE:      { return (void *)__ToUppercase(s); }
         case _TOLOWERCASE:      { return (void *)__ToLowercase(s); }
         case _SPLIT:            { return (void *)__Split(s, get_va_arg_str(args)); }
-        case _SPLITCHAR:        { return (void *)__SplitChar(s, get_va_arg_char(args)); }
+        case _SPLITCHAR:        { return (void *)split_string_w_char(s, get_va_arg_char(args)); }
         case _REPLACE:          { 
             char *find = get_va_arg_str(args);
             char *replace = get_va_arg_str(args);
-            return (void *)__Replace(s, find, replace); 
+            return (void *)replace_string(s, find, replace); 
         }
         case _REPLACECHAR:      { return (void *)__ReplaceCharWithStr(s, get_va_arg_char(args), get_va_arg_str(args)); }
         case _JOIN:             { 
@@ -67,30 +71,31 @@ void *__StrUtils(str *s, strTools mode, ...) {
 	return 0;
 }
 
-long __findChar(str *s, const char ch) {
+// == [ DEALING WITH BYTES ] ==
+
+long __CountChar(str *s, const char ch) {
+    long count = 0;
     for(int i = 0; i < s->idx; i++)
         if(s->data[i] == ch)
-            return i;
+            count++;
 
-    return 0;
+    return count;
 }
 
-long __findSubstr(str *s, const char *substr) {
-    for(int i = 0; i < s->idx; i++) { 
-        if(s->data[i] == substr[0]) {
-            int start = i;
-            for(int j = 0; j < strlen(substr); j++) {
-                printf("%c %c\n", s->data[j + start], substr[j]);
+// only find the first matched char and return position
+long findchar(str *s, const char ch) {
+    return findchar_at_count(s, ch, 1);
+}
 
-                if(s->data[j + start] != substr[j])
-                    break;
+// If a char is found the number of count provided, it will return the position of the char in string
+long findchar_at_count(str *s, const char ch, int count) {
+    int c = 0;
+    for(int i = 0; i < s->idx; i++) {
+        if(s->data[i] == ch)
+            c++;
 
-                start++;
-            }
-            continue;
-        }
-        
-        printf("%c\n", s->data[i]);
+        if(c == count || (s->data[i] == ch && count == 0))
+            return i;
     }
 
     return 0;
@@ -100,28 +105,34 @@ long __newString(str *s, const char *data) {
     if(strlen(data) == 0)
         return 0;
 
-    s->data = strdup(data);
-    s->idx = strlen(data) + 1;
+    if(s->data == NULL) {
+        s->data = strdup(data);
+        s->idx = strlen(data) + 1;
+        return 1;
+    }
+
+    free(s->data);
+    s->data = (char *)alloc(strlen(data) + 1);
+    strcpy(s->data, data);
+    s->idx = (long)strlen(data) + 1;
     return 1;
 }
 
-long __add2str(str *s, const char *data) {
-    if(strlen(data) == 0)
-        return 0;
+str *__add2str(str *s, const char *data) {
+    if(strlen(s->data) == 0) {
+        s = string(data);
+        return s;
+    }
 
-    if(s->data == NULL)
-        return __newString(s, data);
+    char *new = (char *)alloc(strlen(s->data) + strlen(data));
+    strcpy(new, s->data);
+    strncat(new, data, strlen(data));
 
-    int new_sz = strlen(s->data) + strlen(data) + 1;
-    char *new = (char *)alloc(new_sz);
-    strcat(new, s->data);
-    strcat(new, data);
-    
-    free(s->data);
+    s->idx = strlen(s->data) + strlen(data);
     s->data = strdup(new);
-    s->idx = new_sz;
     free(new);
-    return 1;
+
+    return s;
 }
 
 long __Strip(str *s) {
@@ -155,7 +166,6 @@ long __StripCh2End(str *s, const char start) {
     
     int i = 0;
     while(i < s->idx) {
-        printf("%d %ld\n", i, s->idx);
         if(s->data[i] == start)
             break;
 
@@ -217,17 +227,16 @@ long __Trim_By_Idx(str *s, int idx) {
     return modify_chk;
 }
 
-long __CountChar(str *s, const char ch) {
-    // if(s->data == NULL || ch == '\0')
-    //     return 0;
+// == [ DEALING WITH STRING ] == 
 
-    long count = 0;
+long __findSubstr(str *s, const char *substr) {
     for(int i = 0; i < s->idx; i++) {
-        if(s->data[i] == ch)
-            count++;
+        if(s->data[i] == substr[0] && s->data[s->idx] == substr[strlen(substr)]) {
+            return i;
+        }
     }
 
-    return count;
+    return 0;
 }
 
 long __CountSubstr(str *s, const char *substr) {
@@ -243,6 +252,20 @@ long __CountSubstr(str *s, const char *substr) {
             count++;
 
     return count;
+}
+
+char *get_substr(str *s, int start, int end) {
+    char *new = (char *)alloc(1);
+    int idx = 0;
+    for(int i = 0; i < s->idx; i++) { 
+        if(i >= start && i < end) {
+            strncat(new, &s->data[i], sizeof(char));
+            idx++;
+            new = (char*)realloc(new, idx + 1);
+        }
+    }
+
+    return new;
 }
 
 long __StartsWith(str *s, const char *str) {
@@ -346,12 +369,10 @@ long __ToLowercase(str *s) {
 }
 
 long __ReplaceChar(str *s, const char ch, const char r) {
-    printf("%c | %c", ch, r);
     char *new = (char *)alloc(strlen(s->data) + 1);
     int i = 0;
     while(i < s->idx) {
         if(s->data[i] == ch) {
-            // printf("ADDING")
             strncat(new, &r, sizeof(char));
             i++;
             continue;
@@ -386,35 +407,26 @@ long __ReplaceCharWithStr(str *s, const char ch, const char *r) {
     return 1;
 }
 
-long __Replace(str *s, const char *find, const char *replacement) {
-    long sz = strlen(s->data);
-    if(strlen(replacement) > strlen(find))
-        sz = strlen(s->data) + (strlen(replacement) - strlen(find));
+char *replace_string(str *s, const char *find, const char *replace) {
 
-    char *buffer = (char *)alloc(sz);
-
-    for(int i = 0; i < strlen(s->data); i++) {
-        if(s->data[i] == find[0]) {
-            int ch_count = 0;
-            for(int start = i; start < strlen(find) + 1; start++) {
-                // Match all Characters
-                if(s->data[start] == find[ch_count])
-                    ch_count++;
-
-                // Append replacement and adjust i
-                if(ch_count == strlen(find)) {
-                    strncat(buffer, replacement, strlen(replacement));
-                    i += strlen(find);
-                }
-            }
+    char *new = (char *)alloc(s->idx + strlen(replace) + 1);
+    int string_at = __findSubstr(s, find);
+    int i = 0;
+    while(i < s->idx) {
+        if(i >= string_at && i < (string_at + strlen(find))) {
+            strncat(new, replace, strlen(replace));
+            i += strlen(find);
+            continue;
         }
-        strncat(buffer, &s->data[i], sizeof(char));
+
+        strncat(new, &s->data[i], sizeof(char));
+        i++;
     }
+    s->idx = strlen(s->data) + strlen(replace) + 1;
+    s->data = strdup(new);
+    free(new);
 
-    s->data = strdup(buffer);
-    free(buffer);
-
-    return 1;
+    return s->data;
 }
 
 char **__Split(str *s, const char *delim) {
@@ -434,36 +446,26 @@ char **__Split(str *s, const char *delim) {
     return arr;
 }
 
-char **__SplitChar(str *s, const char delim) {
-    if(s->data == NULL || strlen(s->data) == 0)
-        return 0;
+char **split_string_w_char(str *s, const char delim) {
+    long count = __CountChar(s, delim) + 1;
+    
+    char **arr = (char **)alloc2(count);
+    long idx = 0;
 
-    long args_count = __CountChar(s, delim);
-    char **arr = (char **)alloc2(args_count + 1);
-    memset(arr, '\0', (sizeof(char *) * args_count) + 1);
-    int idx = 0;
-    int ch_count = 0;
-
-    arr[0] = (char *)alloc(1);
-    for(int i = 0; i < strlen(s->data); i++) 
+    int start = findchar_at_count(s, delim, 0), end = 0;
+    for(int i = 1; i < count; i++)
     {
-        if(s->data[i] == '\0')
-            break;
+        end = findchar_at_count(s, delim, i);
+        char *sub = get_substr(s, start, end);
 
-        if(s->data[i] == delim) {
-            idx++;
-            arr[idx] = (char *)alloc(1);
-            ch_count = 1;
-            continue;
-        }
+        if(i > 1)
+            sub = get_substr(s, start + 1, end);
 
-        strncat(arr[idx], &s->data[i], sizeof(char));
-        arr[idx] = (char *)realloc(arr[idx], (sizeof(char *) * ch_count) + 1);
-        arr[idx][ch_count] = '\0';
-        arr[idx + 1] = NULL;
-        ch_count++;
+        arr[idx] = strdup(sub);
+        idx++;
+        free(sub);
+        start = end;
     }
-    arr[idx + 1] = NULL;
 
     return arr;
 }

@@ -165,7 +165,7 @@ long __Trim(str *s, const char delim) {
     if(s->data == NULL || strlen(s->data) == 0)
         return 0;
 
-    char *buffer = (char *)alloc(strlen(s->data) + 1);
+    char *buffer = (char *)alloc(strlen(s->data));
     memset(buffer, '\0', strlen(s->data) + 1);
     
     int start = 0;
@@ -187,8 +187,8 @@ long __Trim_By_Idx(str *s, int idx) {
     if(s->data == NULL || strlen(s->data) == 0)
         return 0;
 
-    char *buffer = (char *)alloc(strlen(s->data) + 1);
-    memset(buffer, '\0', strlen(s->data) + 1);
+    char *buffer = (char *)alloc(strlen(s->data));
+    memset(buffer, '\0', strlen(s->data));
     
     int start = 0;
     for(int i = 0; i < strlen(s->data); i++) {
@@ -200,6 +200,7 @@ long __Trim_By_Idx(str *s, int idx) {
     int modify_chk = strlen(buffer) < strlen(s->data) ? 1 : 0;
     s->data = strdup(buffer);
     free(buffer);
+    s->idx--;
 
     return modify_chk;
 }
@@ -232,13 +233,14 @@ long __CountSubstr(str *s, const char *substr) {
 }
 
 char *get_substr(str *s, int start, int end) {
-    char *new = (char *)alloc(1);
+    int left = end-start;
+    char *new = (char *)alloc(s->idx + left + 1);
     int idx = 0;
     for(int i = 0; i < s->idx; i++) { 
         if(i >= start && i < end) {
             strncat(new, &s->data[i], sizeof(char));
             idx++;
-            new = (char*)realloc(new, idx + 1);
+            // new = (char*)realloc(new, idx + 1);
         }
     }
 
@@ -430,19 +432,23 @@ char **split_string_w_char(str *s, const char delim) {
     long idx = 0;
 
     int start = findchar_at_count(s, delim, 0), end = 0;
-    for(int i = 1; i < count; i++)
+    for(int i = 1; i < count + 1; i++)
     {
         end = findchar_at_count(s, delim, i);
         char *sub = get_substr(s, start, end);
 
-        if(i > 1)
+        if(i > 1) {
+            if(end == 0)
+                end = s->idx;
             sub = get_substr(s, start + 1, end);
+        }
 
         arr[idx] = strdup(sub);
         idx++;
         free(sub);
         start = end;
     }
+    arr[idx] = NULL;
 
     return arr;
 }

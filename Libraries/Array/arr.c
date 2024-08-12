@@ -20,6 +20,7 @@ Arr *Array(char **c_arr) {
             if(c_arr[i] == NULL)
                 break;
                 
+            
             a->arr[i] = strdup(c_arr[i]);
             a->idx++;
         }
@@ -87,6 +88,7 @@ char *__arr2str(Arr *a, const char delim) {
     }
 
     char *buff = (char *)alloc(count + a->idx + 1);
+
     i = 0;
     while(a->arr[i] != NULL) {
         strncat(buff, a->arr[i], strlen(a->arr[i]));

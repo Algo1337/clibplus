@@ -9,64 +9,19 @@
 #include <clib/OS/cFile.h>
 #include <clib/Net/request.h>
 
-// Accepting one line json format only
-void make_json_pretty(str *s) {
-    char *new = (char *)alloc(1);
-    int idx = 0;
-
-    int depths = 0, j = 0;
-    for(int i = 0; i < strlen(s->data); i++) {
-        if(s->data[i] == '{') {
-            depths++;
-            printf("{\n");
-            j = 0;
-            while(j < depths) { 
-                printf("\t"); 
-                j++;
-            }
-            continue;
-        }
-
-        if(s->data[i] == '}') {
-            printf("\n");
-            depths--;
-            j = 0;
-            while(j < depths) { 
-                printf("\t"); 
-                j++; 
-            }
-            printf("}");
-            continue;
-        }
-
-        if(s->data[i] == ',' && (s->data[i + 1] == '"' || s->data[i - 1] == '"')) {
-            j = 0;
-            printf(",\n");
-            while(j < depths) { 
-                printf("\t"); 
-                j++; 
-            }
-            continue;
-        }
-
-        printf("%c", s->data[i]);
-    }
-
-    printf("%s\n", new);
-}
-
 int main() {
     cFile *c = Openfile("config.json");
     char *raw_json_data = c->Read(c);
 
-    str *raw_json = string(raw_json_data);
-    raw_json->Utils(raw_json, _REPLACE, ",\"", ",\n\"");
-    printf("%s\n", raw_json->data);
-    raw_json->Utils(raw_json, _REPLACECHAR, '{', "{\n");
-    raw_json->Utils(raw_json, _REPLACECHAR, '}', "\n}");
-    printf("%s\n", raw_json->data);
+    Map *json = decode_oneline_json(raw_json_data);
 
-    free(c);
-    free(raw_json);
+    for(int i = 0; json->idx; i++) {
+        if(json->keys[i] == NULL)
+            break;
+            
+        JsonField *field = (JsonField *)json->keys[i];
+        printf("STRUCTURE: %s | Key: %s | Value: %s\n", 
+            field->STRUCTURE_PATH->data, field->Key->data, field->Value->data);
+    }
     return 0;
 }

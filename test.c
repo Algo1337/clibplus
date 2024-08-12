@@ -7,17 +7,9 @@
 #include <clib/Net/request.h>
 
 int main() {
-    HTTPClientResponse *r = RequestURL("ipwho.is", "/8.8.4.4");
-    char **lines = r->body->Utils(r->body, _SPLIT, "\n");
-    int c = count_arr(lines);
-
-    str *raw_json = string(lines[10]);
-    __ReplaceCharWithStr(raw_json, ',', ",\n");
-    __ReplaceCharWithStr(raw_json, '{', "{\n");
-    __ReplaceCharWithStr(raw_json, '}', ",\n}");
-
-    printf("%s\n", raw_json->data);
-
-    free(r);
+    str *n = string("/");
+    n->AppendString(n, "parent");
+    n->AppendString(n, "BEEP\n");
+    n->AppendString(n, "GEE\n");
     return 0;
 }

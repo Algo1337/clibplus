@@ -101,4 +101,6 @@ char    *encode_json(Map *m);
 //
 Map     *decode_json(const char *data);
 
+Map *decode_oneline_json(const char *data);
+
 #endif

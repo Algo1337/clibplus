@@ -2,8 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <clib/String/str.h>
+#include <clib/Array/arr.h>
 #include <clib/Map/map.h>
 #include <clib/OS/cFile.h>
+
 
 int main() {
     cFile *c = Openfile("config.json");
@@ -16,12 +19,10 @@ int main() {
             break;
             
         JsonField *field = (JsonField *)json->keys[i];
-        if(strcmp(field->STRUCTURE_PATH->data, "/") == 0)
-            printf("STRUCTURE: %s | Key: %s | Value: %s\n", 
-                field->STRUCTURE_PATH->data, field->Key->data, field->Value->data);
+        printf("STRUCTURE: %s | Key: %s | Value: %s\n", 
+            field->STRUCTURE_PATH->data, field->Key->data, field->Value->data);
     }
 
     free(c);
-    free(json);
     return 0;
 }

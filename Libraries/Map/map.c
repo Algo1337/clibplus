@@ -123,33 +123,49 @@ char *encode_json(Map *m) {
 
 }
 
+Map *decode_oneline_json(const char *data) {
+    str *raw_json = string(data);
+    long ch_count = raw_json->CountChar(raw_json, ',');
+    raw_json->ReplaceCharWithStr(raw_json, ',', ",\n");
+        
+    raw_json->ReplaceCharWithStr(raw_json, '{', "{\n");
+    raw_json->ReplaceCharWithStr(raw_json, '}', "\n}");
+
+    Map *json = decode_json(raw_json->data);
+
+    return json;
+}
 
 //brb
 Map *decode_json(const char *data) {
     Map *json = create_json_map();
-    str *raw_json = string(data);
 
-    char **lines = (char **)raw_json->SplitStringWithChar(raw_json, '\n');
+    str *rjson = string(data);
+    char **lines = rjson->Split(rjson, "\n");
     int line_count = count_arr(lines);
 
-    char *start[] = {"parent", NULL};
-    Arr *structure_path = Array(start);
-    str *full_path = string("/");
+    /// BRO TURN ON UR MIC KIDDDDDDDDDDDD
+    str *structure_path = string("parent");
+    str *structure = string("/");
 
-    for(int i = 0; i < line_count; i++) {
+    if(line_count < 1)
+        return NULL;
+
+    for(int i = 0; i < line_count; i++)
+    {
         str *line = string(lines[i]);
         line->Strip(line);
 
-        if(strstr(line->data, "}")) {
-            structure_path->Utils(structure_path, __REMOVE_BY_IDX, structure_path->idx - 1);
-            full_path = string("/");
+        if(strstr(line->data, "}") || !strcmp(line->data, "}")) {
+            structure_path->ReplaceString(structure_path, structure->data, "/");
+            structure = string("/");
         }
 
-        char **args = (char **)line->SplitStringWithChar(line, ':');
+        char **args = (char **)line->Split(line, ":");
         Arr *a = Array(args);
 
-        // Key/Value Found
-        if(a->idx == 2) {
+        if(a->idx == 2)
+        {
             str *key = string(args[0]);
             key->TrimAtIdx(key, 0);
             key->TrimAtIdx(key, strlen(key->data) - 1);
@@ -161,12 +177,16 @@ Map *decode_json(const char *data) {
 
             // Value Datatype Checking
             if(strcmp(value->data, "{") == 0) {
-                structure_path->Utils(structure_path, __APPEND, key->data);
-                full_path->data = __arr2str(structure_path, '/');
+                structure_path->AppendString(structure_path, "/");
+                structure_path->AppendString(structure_path, key->data);
+                structure = string("/");
+                structure->AppendString(structure, key->data);
                 continue;
             } else if (value->data[value->idx - 2] == '{') {
-                structure_path->Utils(structure_path, __APPEND, key->data);
-                full_path->data = __arr2str(structure_path, '/');
+                structure_path->AppendString(structure_path, "/");
+                structure_path->AppendString(structure_path, key->data);
+                structure = string("/");
+                structure->AppendString(structure, key->data);
                 continue;
             }
             
@@ -178,10 +198,11 @@ Map *decode_json(const char *data) {
                 value->TrimAtIdx(value, strlen(value->data) - 1);
             }
 
-            __AppendJSONField(json, full_path->data, key->data, value->data);
+            __AppendJSONField(json, structure->data, key->data, value->data);
             free(key);
             free(value);
         }
+        
         free(a);
         free(args);
         free(line);

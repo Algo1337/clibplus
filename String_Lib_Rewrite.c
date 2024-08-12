@@ -57,7 +57,7 @@ long findchar_at_count(String *s, const char ch, int count) {
         if(s->data[i] == ch)
             c++;
 
-        if(c == count)
+        if(c == count || (s->data[i] == ch && count == 0))
             return i;
     }
 
@@ -80,22 +80,23 @@ long findstr(String *s, const char *str) {
 }
 
 long count_char(String *s, const char ch) {
-    int count = 0;
-    for(int i = 0; i < s->idx; i++)
+    long count = 0;
+    for(int i = 0; i < s->idx; i++) {
         if(s->data[i] == ch)
             count++;
+    }
 
     return count;
 }
 
 char *get_substr(String *s, int start, int end) {
-    char *new = (char *)alloc(end + 1);
+    char *new = (char *)alloc(1);
     int idx = 0;
     for(int i = 0; i < s->idx; i++) { 
-        if(i >= start && i <= end) {
-            strcat(new, &s->data[i]);
+        if(i >= start && i < end) {
+            strncat(new, &s->data[i], sizeof(char));
             idx++;
-            new = (char *)realloc(new, idx + 1);
+            new = (char*)realloc(new, idx + 1);
         }
     }
 
@@ -103,29 +104,40 @@ char *get_substr(String *s, int start, int end) {
 }
 
 char **split_string_w_char(String *s, const char delim) {
-    int char_count = count_char(s, delim);
-    char **new = (char *)alloc2(char_count + 1);
+    long count = count_char(s, delim) + 1;
+    
+    char **arr = (char **)alloc2(count);
+    long idx = 0;
 
-    int start = 0;
-    for(int i = 0; i < char_count + 1; i++) {
-        int pos = findchar_at_count(s, delim, i);
-        start = pos;
-        char *substr = get_substr(s, start, pos);
-        new[i] = strdup(substr);
-        free(substr);
+    int start = findchar_at_count(s, delim, 0), end = 0;
+    for(int i = 1; i < count; i++)
+    {
+        end = findchar_at_count(s, delim, i);
+        char *sub = get_substr(s, start, end);
+
+        if(i > 1)
+            sub = get_substr(s, start + 1, end);
+
+        arr[idx] = strdup(sub);
+        idx++;
+        free(sub);
+        start = end;
     }
 
-    return new;
+    return arr;
 }
 
 int main() {
     String *n = string(NULL);
-    n = append2str(n, "NEW");
-    n = append2str(n, "\nBEEP");
-    n = append2str(n, "\nGEE");
+    n = append2str(n, "NEW\n");
+    n = append2str(n, "BEEP\n");
+    n = append2str(n, "GEE\n");
 
-    char **lines = split_string_w_char(n, '\n');
-    for(int i = 0; i < 3; i++)
-        printf("%s\n", lines[i]);
+    char **arr = split_string_w_char(n, '\n');
+    int i = 0;
+    while(arr[i] != NULL)
+        printf("%s\n", arr[i++]);
+    
+    
     return 0;
 }

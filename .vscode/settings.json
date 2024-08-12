@@ -18,7 +18,9 @@
         "stdio.h": "c",
         "cfile.h": "c",
         "arr.h": "c",
-        "ssl.h": "c"
+        "ssl.h": "c",
+        "initializer_list": "c",
+        "xtree": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

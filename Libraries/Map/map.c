@@ -129,7 +129,7 @@ Map *decode_json(const char *data) {
     Map *json = create_json_map();
     str *raw_json = string(data);
 
-    char **lines = (char **)raw_json->Utils(raw_json, _SPLIT, "\n");
+    char **lines = (char **)raw_json->SplitStringWithChar(raw_json, '\n');
     int line_count = count_arr(lines);
 
     char *start[] = {"parent", NULL};
@@ -138,26 +138,26 @@ Map *decode_json(const char *data) {
 
     for(int i = 0; i < line_count; i++) {
         str *line = string(lines[i]);
-        line->Utils(line, _STRIP);
+        line->Strip(line);
 
         if(strstr(line->data, "}")) {
             structure_path->Utils(structure_path, __REMOVE_BY_IDX, structure_path->idx - 1);
             full_path = string("/");
         }
 
-        char **args = (char **)line->Utils(line, _SPLIT, ":");
+        char **args = (char **)line->SplitStringWithChar(line, ':');
         Arr *a = Array(args);
 
         // Key/Value Found
         if(a->idx == 2) {
             str *key = string(args[0]);
-            key->Utils(key, _TRIM_AT_IDX, 0);
-            key->Utils(key, _TRIM_AT_IDX, strlen(key->data) - 1);
-            key->Utils(key, _STRIP);
+            key->TrimAtIdx(key, 0);
+            key->TrimAtIdx(key, strlen(key->data) - 1);
+            key->Strip(key);
 
             str *value = string(args[1]);
-            value->Utils(value, _TRIM, ',');
-            value->Utils(value, _STRIP);
+            value->Trim(value, ',');
+            value->Strip(value);
 
             // Value Datatype Checking
             if(strcmp(value->data, "{") == 0) {
@@ -171,11 +171,11 @@ Map *decode_json(const char *data) {
             }
             
             if(strstr(value->data, "\"") > 0) {
-                value->Utils(value, _TRIM_AT_IDX, 0);
-                value->Utils(value, _TRIM_AT_IDX, strlen(value->data) - 1);
+                value->TrimAtIdx(value, 0);
+                value->TrimAtIdx(value, strlen(value->data) - 1);
             } else if(value->data[0] == '[' && value->data[strlen(value->data) - 1] == ']') {
-                value->Utils(value, _TRIM_AT_IDX, 0);
-                value->Utils(value, _TRIM_AT_IDX, strlen(value->data) - 1);
+                value->TrimAtIdx(value, 0);
+                value->TrimAtIdx(value, strlen(value->data) - 1);
             }
 
             __AppendJSONField(json, full_path->data, key->data, value->data);

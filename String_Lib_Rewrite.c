@@ -6,16 +6,17 @@
 
 int main() {
     str *n = string(NULL);
-    n = __add2str(n, "NEW\n");
-    n = __add2str(n, "BEEP\n");
-    n = __add2str(n, "GEE\n");
+    n->AppendString(n, "NEW\n");
+    n->AppendString(n, "BEEP\n");
+    n->AppendString(n, "GEE\n");
 
-    long t = (long)__findSubstr(n, "BEEP");
-    printf("%ld\n", t, n->data);
+    long t = n->FindSubstr(n, "BEEP");
+    printf("%ld\n", t);
 
-    n->data = replace_string(n, "BEEP", "LUL");
+    n->ReplaceString(n, "BEEP", "LUL");
 
-    n = __add2str(n, "GAY");
+    n->AppendString(n, "GAY");
+    n->TrimAtIdx(n, n->idx - 1);
     printf("%s\n", n->data);
     printf("%ld", n->idx);
     return 0;

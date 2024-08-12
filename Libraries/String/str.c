@@ -9,6 +9,31 @@
 str *string(const char *data) {
     str *s = (str *)malloc(sizeof(str));
 
+    s->NewString            = __newString;
+    s->AppendString         = __add2str;
+    s->CountChar            = __CountChar;
+    s->FindChar             = findchar;
+    s->FindCharAt           = findchar_at_count;
+    s->Strip                = __Strip;
+    s->StripCh2End          = __StripCh2End;
+    s->Trim                 = __Trim;
+    s->TrimAtIdx            = __Trim_By_Idx;
+    s->CountSubstr          = __CountSubstr;
+    s->FindSubstr           = __findSubstr;
+    s->GetSubstr            = get_substr;
+    s->StartsWith           = __StartsWith;
+    s->EndsWith             = __EndsWith;
+    s->IsUppercase          = __IsUppercase; 
+    s->IsLowercase          = __IsLowercase;
+    s->ToUppercase          = __ToUppercase;
+    s->ToLowercase          = __ToLowercase;
+    s->ReplaceString        = replace_string;
+    s->ReplaceChar          = __ReplaceChar;
+    s->ReplaceCharWithStr   = __ReplaceCharWithStr;
+    s->Split                = __Split;
+    s->SplitStringWithChar  = split_string_w_char;
+    s->Join                 = __Join;
+
     if(data == NULL || strlen(data) == 0)
     {
         s->data = (char *)alloc(1);
@@ -23,52 +48,38 @@ str *string(const char *data) {
     return s;
 }
 
+int __newString(str *s, const char *data) {
+    if(strlen(data) == 0)
+        return 0;
 
-void *__StrUtils(str *s, strTools mode, ...) {
-    int first = 1, sec = 2;
-	va_list args;
-    va_start(args, first);
+    if(s->data == NULL) {
+        s->data = strdup(data);
+        s->idx = strlen(data) + 1;
+        return 1;
+    }
 
-	switch(mode) {
-        case _NEW:              { 
-            __newString(s, get_va_arg_str(args));
-            break;
-        }
-        case _APPEND: { 
-            __add2str(s, get_va_arg_str(args));
-            break;
-        }
-        case _FINDCHAR:         { return (void *)findchar(s, get_va_arg_char(args)); }
-        case _FINDSUBSTR:       { return (void *)__findSubstr(s, get_va_arg_str(args)); }
-		case _STRIP:            { return (void *)__Strip(s); }
-        case _STRIPCHAR2END:    { return (void *)__StripCh2End(s, get_va_arg_char(args)); }
-		case _TRIM:             { return (void *)__Trim(s, get_va_arg_char(args)); }
-        case _TRIM_AT_IDX:      { return (void *)__Trim_By_Idx(s, get_va_arg_char(args)); }
-		case _COUNTCHAR:        { return (void *)__CountChar(s, get_va_arg_char(args)); }
-		case _COUNTSTR:         { return (void *)__CountSubstr(s, get_va_arg_str(args)); }
-		case _STARTSWITH:       { return (void *)__StartsWith(s, get_va_arg_str(args)); }
-		case _ENDSWITH:         { return (void *)__EndsWith(s, get_va_arg_str(args)); }
-        case _ISUPPERCASE:      { return (void *)__IsUppercase(s); }
-		case _ISLOWERCASE:      { return (void *)__IsLowercase(s); }
-        case _TOUPPERCASE:      { return (void *)__ToUppercase(s); }
-        case _TOLOWERCASE:      { return (void *)__ToLowercase(s); }
-        case _SPLIT:            { return (void *)__Split(s, get_va_arg_str(args)); }
-        case _SPLITCHAR:        { return (void *)split_string_w_char(s, get_va_arg_char(args)); }
-        case _REPLACE:          { 
-            char *find = get_va_arg_str(args);
-            char *replace = get_va_arg_str(args);
-            return (void *)replace_string(s, find, replace); 
-        }
-        case _REPLACECHAR:      { return (void *)__ReplaceCharWithStr(s, get_va_arg_char(args), get_va_arg_str(args)); }
-        case _JOIN:             { 
-            const char **arr = (const char **)get_va_args_dptr_arr(args);
-            char delim = get_va_arg_char(args);
-            return (void *)__Join(s, arr, delim); 
-        }
-	}
+    free(s->data);
+    s->data = (char *)alloc(strlen(data) + 1);
+    strcpy(s->data, data);
+    s->idx = (long)strlen(data) + 1;
+    return 1;
+}
 
-    va_end(args);
-	return 0;
+int __add2str(str *s, const char *data) {
+    if(strlen(s->data) == 0) {
+        *s = *string(data);
+        return 0;
+    }
+
+    char *new = (char *)alloc(strlen(s->data) + strlen(data));
+    strcpy(new, s->data);
+    strncat(new, data, strlen(data));
+
+    s->idx = strlen(s->data) + strlen(data);
+    s->data = strdup(new);
+    free(new);
+
+    return 1;
 }
 
 // == [ DEALING WITH BYTES ] ==
@@ -99,40 +110,6 @@ long findchar_at_count(str *s, const char ch, int count) {
     }
 
     return 0;
-}
-
-long __newString(str *s, const char *data) {
-    if(strlen(data) == 0)
-        return 0;
-
-    if(s->data == NULL) {
-        s->data = strdup(data);
-        s->idx = strlen(data) + 1;
-        return 1;
-    }
-
-    free(s->data);
-    s->data = (char *)alloc(strlen(data) + 1);
-    strcpy(s->data, data);
-    s->idx = (long)strlen(data) + 1;
-    return 1;
-}
-
-str *__add2str(str *s, const char *data) {
-    if(strlen(s->data) == 0) {
-        s = string(data);
-        return s;
-    }
-
-    char *new = (char *)alloc(strlen(s->data) + strlen(data));
-    strcpy(new, s->data);
-    strncat(new, data, strlen(data));
-
-    s->idx = strlen(s->data) + strlen(data);
-    s->data = strdup(new);
-    free(new);
-
-    return s;
 }
 
 long __Strip(str *s) {

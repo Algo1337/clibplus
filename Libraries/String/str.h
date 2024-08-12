@@ -6,47 +6,39 @@
 #include "../global.h"
 #include "../global_memory.h"
 
-typedef enum strTools {
-    _NONE,
-
-    // Checking Tools
-    _FINDCHAR,      // Find a char in string 
-    _FINDSUBSTR,    // Find a sub string provided in string
-    _COUNTCHAR,     // Count a char in string
-    _COUNTSTR,      // Count a substr in string
-    _STARTSWITH,    // check if string starts with a string
-    _ENDSWITH,      // check if a string ends with a string
-    _ISLOWERCASE,   // check if a string is all lowercase
-    _ISUPPERCASE,   // check if a string is all uppercase
-
-    // Modifying Tools
-    _NEW,           // Overwrite new data
-    _APPEND,        // Append a string
-    _REMOVE,        // Remove a substr
-    _REPLACE,       // Replace a substr in the string
-    _REPLACECHAR,   // Replace a char in the string
-    _STRIP,         // Strips whitespaces from the string
-    _STRIPCHAR2END, // Strip a string from a char to the end of the strip
-    _TRIM,          // Trim a char from the string
-    _TRIM_AT_IDX,   // Trim a char from the string at idx
-    _SPLIT,         // Split a string into an array using a string delim
-    _SPLITCHAR,     // Split a string into an array using a char delim
-    _TOLOWERCASE,   // Convert an entire string to lowercase
-    _TOUPPERCASE,   // Convert an entire string to uppercase
-    _JOIN           // Merge an array into a string
-} strTools;
-
 typedef struct str {
-    char    *data;      // String Data
-    long    idx;        // Current String Length
+    char            *data;      // String Data
+    long            idx;        // Current String Length
 
-    // String Utilities
-    void *  (*Utils) (struct str *s, strTools mode, ...);
+    // String Utilitiess
+    int             (*NewString)            (struct str *s, const char *data);
+    int             (*AppendString)         (struct str *s, const char *data);
 
-    char ** (*SplitCh) (struct str *s, const char ch);
+    long            (*CountChar)            (struct str *s, const char ch);
+    long            (*FindChar)             (struct str *s, const char ch);
+    long            (*FindCharAt)           (struct str *s, const char ch, int count);
+    long            (*Strip)                (struct str *s);
+    long            (*StripCh2End)          (struct str *s, const char start);
+    long            (*Trim)                 (struct str *s, const char delim);
+    long            (*TrimAtIdx)            (struct str *s, int idx);
+    long            (*CountSubstr)          (struct str *s, const char *substr);
+    long            (*FindSubstr)           (struct str *s, const char *substr);
+    char *          (*GetSubstr)            (struct str *s, int start, int end);
+    long            (*StartsWith)           (struct str *s, const char *str);
+    long            (*EndsWith)             (struct str *s, const char *str);
+    long            (*IsUppercase)          (struct str *s);
+    long            (*IsLowercase)          (struct str *s);
+    long            (*ToUppercase)          (struct str *s);
+    long            (*ToLowercase)          (struct str *s);
+    long            (*ReplaceChar)          (struct str *s, const char ch, const char r);
+    long            (*ReplaceCharWithStr)   (struct str *s, const char ch, const char *r);
+    char *          (*ReplaceString)        (struct str *s, const char *find, const char *replace);
+    char **         (*Split)                (struct str *s, const char *delim);
+    char **         (*SplitStringWithChar)  (struct str *s, const char delim);
+    void            (*Join)                 (struct str *s, const char **arr, const char delim);
 
     // Clean up the structure
-    void    (*Kill)  (struct str *s);
+    void            (*Kill)  (struct str *s);
 } str;
 
 #define DeclareT(typ, name) \
@@ -68,19 +60,14 @@ DeclarePtrT(char, strArr);
 str     *string(const char *data);
 
 //
-//      Set of String Utilities Using ArrTools
-//
-void    *__StrUtils(str *s, strTools mode, ...);
-
-//
 //      Start/Reset the current string
 //
-long     __newString(str *s, const char *data);
+int     __newString(str *s, const char *data);
 
 //
 //      Append data to the current string
 //
-str    *__add2str(str *s, const char *data);
+int     __add2str(str *s, const char *data);
 
 //////////////////////////////////////
 //     == [ CHAR FUNCTIONS ] ==     //

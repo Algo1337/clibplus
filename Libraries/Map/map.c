@@ -133,6 +133,7 @@ Map *decode_oneline_json(const char *data) {
 
     Map *json = decode_json(raw_json->data);
 
+    free(raw_json);
     return json;
 }
 

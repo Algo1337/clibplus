@@ -55,7 +55,7 @@ void *__StrUtils(str *s, strTools mode, ...) {
             char *replace = get_va_arg_str(args);
             return (void *)__Replace(s, find, replace); 
         }
-        case _REPLACECHAR:      { return (void *)__ReplaceChar(s, get_va_arg_char(args), get_va_arg_char(args)); }
+        case _REPLACECHAR:      { return (void *)__ReplaceCharWithStr(s, get_va_arg_char(args), get_va_arg_str(args)); }
         case _JOIN:             { 
             const char **arr = (const char **)get_va_args_dptr_arr(args);
             char delim = get_va_arg_char(args);
@@ -71,6 +71,27 @@ long __findChar(str *s, const char ch) {
     for(int i = 0; i < s->idx; i++)
         if(s->data[i] == ch)
             return i;
+
+    return 0;
+}
+
+long __findSubstr(str *s, const char *substr) {
+    for(int i = 0; i < s->idx; i++) { 
+        if(s->data[i] == substr[0]) {
+            int start = i;
+            for(int j = 0; j < strlen(substr); j++) {
+                printf("%c %c\n", s->data[j + start], substr[j]);
+
+                if(s->data[j + start] != substr[j])
+                    break;
+
+                start++;
+            }
+            continue;
+        }
+        
+        printf("%c\n", s->data[i]);
+    }
 
     return 0;
 }
@@ -92,7 +113,7 @@ long __add2str(str *s, const char *data) {
         return __newString(s, data);
 
     int new_sz = strlen(s->data) + strlen(data) + 1;
-    char *new = (char *)realloc(s->data, new_sz);
+    char *new = (char *)alloc(new_sz);
     strcat(new, s->data);
     strcat(new, data);
     

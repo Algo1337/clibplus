@@ -9,8 +9,10 @@
 #include <clib/OS/cFile.h>
 #include <clib/Net/request.h>
 
+// Accepting one line json format only
 void make_json_pretty(str *s) {
-    str *new_string = string("-");
+    char *new = (char *)alloc(1);
+    int idx = 0;
 
     int depths = 0, j = 0;
     for(int i = 0; i < strlen(s->data); i++) {
@@ -29,7 +31,10 @@ void make_json_pretty(str *s) {
             printf("\n");
             depths--;
             j = 0;
-            while(j < depths) { printf("\t"); j++; }
+            while(j < depths) { 
+                printf("\t"); 
+                j++; 
+            }
             printf("}");
             continue;
         }
@@ -37,12 +42,17 @@ void make_json_pretty(str *s) {
         if(s->data[i] == ',' && (s->data[i + 1] == '"' || s->data[i - 1] == '"')) {
             j = 0;
             printf(",\n");
-            while(j < depths) { printf("\t"); j++; }
+            while(j < depths) { 
+                printf("\t"); 
+                j++; 
+            }
             continue;
         }
 
         printf("%c", s->data[i]);
     }
+
+    printf("%s\n", new);
 }
 
 int main() {
@@ -50,7 +60,11 @@ int main() {
     char *raw_json_data = c->Read(c);
 
     str *raw_json = string(raw_json_data);
-    make_json_pretty(raw_json);
+    raw_json->Utils(raw_json, _REPLACE, ",\"", ",\n\"");
+    printf("%s\n", raw_json->data);
+    raw_json->Utils(raw_json, _REPLACECHAR, '{', "{\n");
+    raw_json->Utils(raw_json, _REPLACECHAR, '}', "\n}");
+    printf("%s\n", raw_json->data);
 
     free(c);
     free(raw_json);

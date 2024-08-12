@@ -4,6 +4,7 @@
 #define STR_H
 
 #include "../global.h"
+#include "../global_memory.h"
 
 typedef enum strTools {
     _NONE,
@@ -84,6 +85,11 @@ long    __add2str(str *s, const char *data);
 //      Find a char in string
 //
 long    __findChar(str *s, const char ch);
+
+//
+//      Find a substr in the current string
+//
+long    __findSubstr(str *s, const char *substr);
 
 //
 //      Strip whitespaces from front and end of a string

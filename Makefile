@@ -41,5 +41,5 @@ do_test:
 	echo -ne '\x1b[32m[ + ]\x1b[0m [test/map.c] Successfully Compiled and Run Text Completed\n'
 	gcc test/map_json.c -lclib+; ./a.out
 	echo -ne '\x1b[32m[ + ]\x1b[0m [test/map_json.c] Successfully Compiled and Run Text Completed\n'
-	gcc test/http.c -lclib+ -lssl -lcrypto; ./a.out
+	gcc test/http.c -lclib+ -lssl -lcrypto; ./a.out '/?q=70.70.70.72'
 	echo -ne '\x1b[32m[ + ]\x1b[0m [test/http.c] Successfully Compiled and Run Text Completed\n'

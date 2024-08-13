@@ -66,14 +66,14 @@ int __newString(str *s, const char *data) {
 }
 
 int __add2str(str *s, const char *data) {
-    if(strlen(s->data) == 0) {
+    if(s->data == NULL || strlen(s->data) == 0) {
         *s = *string(data);
         return 0;
     }
 
-    char *new = (char *)alloc(strlen(s->data) + strlen(data));
+    char *new = (char *)alloc(strlen(s->data) + strlen(data) + 1);
     strcpy(new, s->data);
-    strncat(new, data, strlen(data));
+    strcat(new, data);
 
     s->idx = strlen(s->data) + strlen(data);
     s->data = strdup(new);
@@ -453,7 +453,10 @@ char **split_string_w_char(str *s, const char delim) {
     return arr;
 }
 
-void *__Join(str *s, const char **arr, const char delim) {
+long __Join(str *s, const char **arr, const char delim) {
+    if(arr == NULL)
+        return 0;
+        
     int i = 0;
     while(arr[i] != NULL)
     {
@@ -467,6 +470,8 @@ void *__Join(str *s, const char **arr, const char delim) {
         i++;
         s->idx += strlen((const char *)&arr[i]) + 1;
     }
+
+    return 1;
 }
 
 void CleanString(str *s) {

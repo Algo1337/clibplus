@@ -50,7 +50,7 @@ char    *__toStr(Arr *a);
 //
 //
 //
-char    *__arr2str(Arr *a, const char delim);
+char   *__arr2str(Arr *a, const char delim);
 
 //
 //      Get Element By Idx

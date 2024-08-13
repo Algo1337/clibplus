@@ -35,7 +35,7 @@ typedef struct str {
     char *          (*ReplaceString)        (struct str *s, const char *find, const char *replace);
     char **         (*Split)                (struct str *s, const char *delim);
     char **         (*SplitStringWithChar)  (struct str *s, const char delim);
-    void            (*Join)                 (struct str *s, const char **arr, const char delim);
+    long            (*Join)                 (struct str *s, const char **arr, const char delim);
 
     // Clean up the structure
     void            (*Kill)  (struct str *s);
@@ -185,7 +185,7 @@ char    **split_string_w_char(str *s, const char delim);
 //
 //      Append all element in the array provided to string with the delim between each
 //
-void    *__Join(str *s, const char **arr, const char delim);
+long    __Join(str *s, const char **arr, const char delim);
 
 //
 //      Clean up the struct

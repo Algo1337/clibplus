@@ -5,6 +5,7 @@
 #include <stdarg.h>
 
 #include "arr.h"
+#include "../String/str.h"
 
 Arr *Array(char **c_arr) {
     Arr *a = (Arr *)malloc(sizeof(Arr));
@@ -79,24 +80,19 @@ char *__toStr(Arr *a) {
 
 
 char *__arr2str(Arr *a, const char delim) {
-    int i = 0, count = 0;
-    while(a->arr[i] != NULL) {
-        if(a->arr[i] == NULL)
-            break;
-        count += strlen(a->arr[i]);
+    char *new = (char *)alloc(1);
+    long sz = 0;
+
+    int i = 0;
+    while(i < a->idx) {
+        sz += strlen(a->arr[i]) + 1;
+        new = (char *)realloc(new, sz);
+        strncat(new, a->arr[i], strlen(a->arr[i]));
+        strncat(new, &delim, sizeof(char));
         i++;
     }
 
-    char *buff = (char *)alloc(count + a->idx + 1);
-
-    i = 0;
-    while(a->arr[i] != NULL) {
-        strncat(buff, a->arr[i], strlen(a->arr[i]));
-        strcat(buff, &delim);
-        i++;
-    }
-
-    return buff;
+    return new;
 }
 
 long __AppendElementAt(Arr *a, int idx, char *data) {

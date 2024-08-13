@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
             new->AppendString(new, "\n");
     }
 
+    // Enable for one line json decoding
     // if(lines == 0) {
     //     Arr *a = Array(NULL);
     //     for(int i = 10; i < line_count; i++)

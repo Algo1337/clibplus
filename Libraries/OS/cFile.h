@@ -12,9 +12,9 @@ typedef struct cFile {
     FILE    *fd;
     char    *data;
     long    data_length;
-
-    char *  (*Read)     (struct cFile *f);
-    int     (*Write)    (struct cFile *f, const char *data);
+    
+    char *  (*Read)     (struct cFile *f);                      // Get file content
+    int     (*Write)    (struct cFile *f, const char *data);    // Write To File
     void *  (*Close)    (struct cFile *f);
 } cFile;
 

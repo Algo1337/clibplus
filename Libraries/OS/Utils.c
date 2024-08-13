@@ -8,11 +8,11 @@ str *ExecuteCmd(const char *cmd) {
     str *s = string(NULL);
     char buffer[1024];
     if(!strlen(cmd))
-        return (char *)"";
+        return NULL;
 
     FILE *resp = popen(cmd, "r");
     if(!resp)
-        return (char *)"";
+        return NULL;
 
     while(fgets(buffer, sizeof(buffer), resp) != NULL) {
         s->AppendString(s, buffer);

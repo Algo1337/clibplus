@@ -145,7 +145,6 @@ Map *decode_json(const char *data) {
     char **lines = rjson->Split(rjson, "\n");
     int line_count = count_arr(lines);
 
-    /// BRO TURN ON UR MIC KIDDDDDDDDDDDD
     str *structure_path = string("parent");
     str *structure = string("/");
 

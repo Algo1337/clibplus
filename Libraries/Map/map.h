@@ -62,7 +62,10 @@ typedef struct Map {
 //
 Map     *create_map();
 
-Map *create_json_map();
+//
+//      Create a JSON Map
+//
+Map     *create_json_map();
 
 //
 //      Map Utilities
@@ -74,7 +77,10 @@ void    *__MapUtils(Map *m, MapTools mode, ...);
 //
 void    *__AppendField(Map *m, const char *key, const char *value);
 
-void *__AppendJSONField(Map *m, const char *structure, const char *key, const char *value);
+//
+//      Append a JSON Field
+//
+void    *__AppendJSONField(Map *m, const char *structure, const char *key, const char *value);
 
 //
 //      Get an exiting Key instance with the key provided
@@ -97,10 +103,13 @@ long    __InKeys(Map *m, const char *key);
 char    *encode_json(Map *m);
 
 //
+//      Convert a one line json to a beautifly json to decode
+//
+Map     *decode_oneline_json(const char *data);
+
+//
 //      Convert a raw json string to a Map
 //
 Map     *decode_json(const char *data);
-
-Map *decode_oneline_json(const char *data);
 
 #endif

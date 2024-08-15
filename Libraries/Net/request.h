@@ -16,9 +16,10 @@
 #include "ssl.h"
 #include "../global.h"
 #include "../c_types.h"
+#include "../Array/arr.h"
 
-typedef struct StatusCode_T {
-    __NULL                          = 1,
+typedef enum StatusCode_T {
+    __NULL                          = -1,
     CONTINUEE                       = 100,
     SWITCH_PROTOCOL                 = 101,
     PROCESSING                      = 102,
@@ -114,7 +115,12 @@ typedef struct HTTPClientResponse {
 //
 //                      Send a WebRequest
 //
-HTTPClientResponse      *RequestURL(const char *hostname, const char *path);
+HTTPClientResponse      *RequestURL(const char *url);
+
+//
+//
+//
+char                    **parse_url(const char *data);
 
 //
 //                      Create a HTTP Socket
@@ -130,5 +136,10 @@ void                    __Send_HTTP_Request(HTTPClient *http, const char *hostna
 //                      Parse the request's response
 //
 HTTPClientResponse      *__Parse_HTTP_Response(HTTPClient *http);
+
+//
+//
+//
+HTTPClientResponse      *parse_raw_traffic(const char *data);
 
 #endif

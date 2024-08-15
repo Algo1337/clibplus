@@ -24,9 +24,12 @@ void    init_openssl();
 SSL_CTX *create_context();
 
 //
+SSL_CTX *create_context_alt();
+
+//
 //      SSL Handshake
 //
-SSL     *ssl_handshake(SSL_CTX *ctx, int sockfd);
+SSL     *ssl_handshake(SSL_CTX *ctx, int sockfd, const char *hostname);
 
 //
 //      Clean Up the OpenSSL Structure

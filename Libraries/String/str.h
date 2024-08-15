@@ -10,6 +10,8 @@ typedef struct str {
     char            *data;      // String Data
     long            idx;        // Current String Length
 
+    struct str      *BASE;
+
     // String Utilitiess
     int             (*NewString)            (struct str *s, const char *data);
     int             (*AppendString)         (struct str *s, const char *data);

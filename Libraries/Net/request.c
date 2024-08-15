@@ -82,13 +82,9 @@ HTTPClientResponse *__Parse_HTTP_Response(HTTPClient *http) {
 
     while ((bytes = SSL_read(http->ssl, buffer, sizeof(buffer) - 1)) > 0) {
         buffer[bytes] = '\0';
-        // a->Utils(a, __APPEND, (char *)&buffer);
         r->body->AppendString(r->body, (const char *)&buffer);
         memset(buffer, '\0', 4096);
     }
-
-    // str *s = string(NULL);
-    // s->Join(s, (const char **)a->arr, ' ');
 
     r->full_route = string(http->url_route); // TODO: Parse to get the last element splitting delim: /
     return r;

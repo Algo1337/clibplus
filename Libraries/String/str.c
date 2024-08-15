@@ -9,6 +9,8 @@
 str *string(const char *data) {
     str *s = (str *)malloc(sizeof(str));
 
+    s->BASE = s;
+
     s->NewString            = __newString;
     s->AppendString         = __add2str;
     s->CountChar            = __CountChar;

@@ -11,7 +11,12 @@
 */
 int main(int argc, char *argv[]) {
     HTTPClientResponse *r = RequestURL("ipwho.is", "/70.70.70.72");
-    printf("%s", r->body->data);
+    
+    if(r->status_code == OK) {
+        printf("%s", r->body->data);
+    } else {
+        printf("Error, Status Code %d", r->status_code)
+    }
 
     return 0;
 }

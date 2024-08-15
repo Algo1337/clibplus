@@ -20,7 +20,6 @@ HTTPClientResponse *RequestURL(const char *url) {
     const char *path = strdup(p->data);
     free(p);
 
-    printf("%s %s\n", hostname, path);
     HTTPClient *http = (HTTPClient *)malloc(sizeof(HTTPClient));
     http->hostname = strdup(hostname);
     http->url_route = strdup(path);
@@ -51,7 +50,6 @@ HTTPClientResponse *RequestURL(const char *url) {
 
 char **parse_url(const char *data) {
     str *s = string(data);
-    printf("%s\n", s->data);
 
     if(strstr(s->data, "https://") != NULL) {
         s->ReplaceString(s, "https://", "");

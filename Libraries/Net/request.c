@@ -11,23 +11,21 @@
 #include "request.h"
 #include "../c_types.h"
 
-HTTPClientResponse *RequestURL(const char *url) {
-    char **hostname_info = parse_url(url);
-    const char *hostname = (hostname_info == NULL ? url : hostname_info[0]);
+HTTPClientResponse *RequestURL(const char *url, Map *headers, Request_T type) {
+    Arr *hostname_info = parse_url(url);
+    const char *hostname = hostname_info->arr[0];
+    const char *path = hostname_info->arr[1];
 
-    str *p = string("/");
-    p->AppendString(p, hostname_info[1]);
-    const char *path = strdup(p->data);
-    free(p);
-
+    printf("%s => %s\n", hostname, path);
     HTTPClient *http = (HTTPClient *)malloc(sizeof(HTTPClient));
     http->hostname = strdup(hostname);
     http->url_route = strdup(path);
+    http->headers = headers;
 
     init_openssl();
-    http->ctx = create_context();
+    http->ctx = create_context_alt();
     if(http->ctx == NULL)
-        http->ctx = create_context_alt();
+        err_n_exit("[ + ] Error, OpenSSL IS SHIT\n");
 
     int sockfd = Create_HTTP_Socket(http, "443");
     if(sockfd < 0)
@@ -35,7 +33,15 @@ HTTPClientResponse *RequestURL(const char *url) {
 
     http->ssl = ssl_handshake(http->ctx, sockfd, hostname);
 
-    __Send_HTTP_Request(http, hostname, path);
+    switch(type) {
+        case __GET: { __Send_HTTP_GET_Request(http); }
+        // case __POST: { }
+        default: {
+            printf("ERROR");
+            return NULL;
+        }
+    }
+    
     HTTPClientResponse *r = __Parse_HTTP_Response(http);
     r = parse_raw_traffic(r->body->data);
 
@@ -48,25 +54,71 @@ HTTPClientResponse *RequestURL(const char *url) {
     return r;
 }
 
-char **parse_url(const char *data) {
-    str *s = string(data);
+Arr *parse_url(const char *data) {
+    str *hostname = string(data);
+    str *path = string("/");
+    Arr *args;
 
-    if(strstr(s->data, "https://") != NULL) {
-        s->ReplaceString(s, "https://", "");
-    } else if(strstr(s->data, "http://") != NULL) {
-        s->ReplaceString(s, "http://", "");
-    } else if(strstr(s->data, "www.") != NULL) {
-        s->ReplaceString(s, "www.", "");
+    if(hostname->StartsWith(hostname, "https://"))
+        hostname->ReplaceString(hostname, "https://", "");
+    
+    if(hostname->StartsWith(hostname, "http://")) 
+        hostname->ReplaceString(hostname, "http://", "");
+    
+    if(strstr(hostname->data, "www."))
+        hostname->ReplaceString(hostname, "www.", "");
+
+    str *url = string(hostname->data);
+    if(hostname->EndsWith(hostname, "/")) {
+        hostname->ReplaceString(hostname, "/", "");
+    } else if(strstr(hostname->data, "/") != NULL) {
+        int start = hostname->FindCharAt(hostname, '/', 1);
+        hostname->RemoveSubstr(hostname, start, hostname->idx - 1);
     }
+    
+    if(url->CountChar(url, '/') > 0) {
+        args = Array(url->Split(url, "/"));
+        
+        for(int i = 1; i < args->idx; i++) {
+            path->AppendString(path, args->arr[i]);
+            if(i != args->idx - 1)
+                path->AppendString(path, "/");
+        }
 
-    if(strstr(s->data, "/") != NULL) {
-        char **args = s->Split(s, "/");
+        args = Array(NULL);
+        args->Utils(args, __APPEND, hostname->data);
+        args->Utils(args, __APPEND, path->data);
 
-        free(s);
+
+        printf("%s => %s\n", args->arr[0], args->arr[1]);
+        free(hostname);
+        free(path);
+        free(url);
         return args;
     }
 
-    return NULL;
+    if(hostname->StartsWith(hostname, "https://"))
+        hostname->ReplaceString(hostname, "https://", "");
+    
+    if(hostname->StartsWith(hostname, "http://")) 
+        hostname->ReplaceString(hostname, "http://", "");
+    
+    if(strstr(hostname->data, "www."))
+        hostname->ReplaceString(hostname, "www.", "");
+
+    if(hostname->EndsWith(hostname, "/"))
+        hostname->ReplaceString(hostname, "/", "");
+    
+    args = Array(NULL);
+    args->Utils(args, __APPEND, hostname->data);
+    args->Utils(args, __APPEND, "/");
+
+    printf("%s => %s", args->arr[0], args->arr[1]);
+
+    free(hostname);
+    free(path);
+    free(url);
+    return args;
 }
 
 int Create_HTTP_Socket(HTTPClient *http, const char *port) {
@@ -93,16 +145,27 @@ int Create_HTTP_Socket(HTTPClient *http, const char *port) {
     return sockfd;
 }
 
-void __Send_HTTP_Request(HTTPClient *http, const char *hostname, const char *path) {
-    char request[1024];
-    snprintf(request, sizeof(request),
-             "GET %s HTTP/1.1\r\n"
-             "Host: %s\r\n"
-             "Connection: close\r\n"
-             "\r\n",
-             path, hostname);
+void __Send_HTTP_GET_Request(HTTPClient *http) {
+    char *start_of_req[] = {"GET ", http->url_route, " HTTP/1.1\r\n", "Host: ", http->hostname, "\r\n"};
+    str *req_data = string(NULL);
 
-    SSL_write(http->ssl, request, strlen(request));
+    for(int i = 0; i < 6; i++)
+        req_data->AppendString(req_data, start_of_req[i]);
+
+
+    if(http->headers != NULL) {
+        for(int i = 0; i < http->headers->idx; i++) {
+            req_data->AppendString(req_data, (char *)((Key *)http->headers->keys[i])->name);
+            req_data->AppendString(req_data, ": ");
+            req_data->AppendString(req_data, (char *)((Key *)http->headers->keys[i])->value);
+            req_data->AppendString(req_data, "\r\n");
+        }
+    }
+
+    req_data->AppendString(req_data, "Connection: close\r\n\r\n");
+
+    SSL_write(http->ssl, req_data->data, strlen(req_data->data));
+    free(req_data);
 }
 
 HTTPClientResponse *__Parse_HTTP_Response(HTTPClient *http) {

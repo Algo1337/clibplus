@@ -45,6 +45,12 @@ SSL_CTX *create_context_alt() {
     // Optional: Disable older, insecure versions of SSL/TLS
     SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1);
 
+    if(SSL_CTX_use_certificate_file(ctx, "cert.crt", SSL_FILETYPE_PEM) <= 0)
+        return NULL;
+
+    if(SSL_CTX_use_PrivateKey_file(ctx, "private.key", SSL_FILETYPE_PEM) <= 0)
+        return NULL;
+
     return ctx;
 }
 

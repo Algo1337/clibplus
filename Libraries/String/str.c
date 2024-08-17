@@ -23,6 +23,7 @@ str *string(const char *data) {
     s->CountSubstr          = __CountSubstr;
     s->FindSubstr           = __findSubstr;
     s->GetSubstr            = get_substr;
+    s->RemoveSubstr         = remove_substr;
     s->StartsWith           = __StartsWith;
     s->EndsWith             = __EndsWith;
     s->IsUppercase          = __IsUppercase; 
@@ -249,6 +250,26 @@ char *get_substr(str *s, int start, int end) {
     return new;
 }
 
+int remove_substr(str *s, int start, int end) {
+    char *new = (char *)alloc(1);
+
+    int ch = 0;
+    for(int i = 0; i < s->idx; i++)
+    {
+        if(i < start || i > end) {
+            strncat(new, &s->data[ch], sizeof(char));
+            ch++;
+            new = (char *)realloc(new, ch + 1);
+        }
+    }
+
+    s->data = strdup(new);
+    s->idx = strlen(new);
+    free(new);
+
+    return 1;
+}
+
 long __StartsWith(str *s, const char *str) {
     if(s->data == NULL || strlen(s->data) == 0)
         return 0;
@@ -423,6 +444,8 @@ char **__Split(str *s, const char *delim) {
         arr = (char **)realloc(arr, (sizeof(char *) * i) + 1);
     }
     arr[i] = NULL;
+
+    
 
     return arr;
 }

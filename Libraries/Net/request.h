@@ -18,6 +18,12 @@
 #include "../c_types.h"
 #include "../Array/arr.h"
 
+typedef enum Request_T {
+    __NULL__    =    -1,
+    __GET       =    0x324,
+    __POST      =    0x724
+} Request_T;
+
 typedef enum StatusCode_T {
     __NULL                          = -1,
     CONTINUEE                       = 100,
@@ -92,6 +98,7 @@ typedef enum StatusCode_T {
 typedef struct HTTPClient {
     char        *hostname;
     char        *url_route;
+    Map         *headers;
 
     SSL         *ssl;
     SSL_CTX     *ctx;
@@ -115,12 +122,12 @@ typedef struct HTTPClientResponse {
 //
 //                      Send a WebRequest
 //
-HTTPClientResponse      *RequestURL(const char *url);
+HTTPClientResponse      *RequestURL(const char *url, Map *headers, Request_T type);
 
 //
 //
 //
-char                    **parse_url(const char *data);
+Arr                     *parse_url(const char *data);
 
 //
 //                      Create a HTTP Socket
@@ -130,7 +137,7 @@ int                     Create_HTTP_Socket(HTTPClient *http, const char *port);
 //
 //                      Construct an HTTP Request Syntax to Send
 //
-void                    __Send_HTTP_Request(HTTPClient *http, const char *hostname, const char *path);
+void                    __Send_HTTP_GET_Request(HTTPClient *http);
 
 //
 //                      Parse the request's response

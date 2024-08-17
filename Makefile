@@ -1,6 +1,17 @@
 .PHONY: all
 
-all: install cp build do_test
+DIR = '/root/bot/headers/'
+
+all: install cp build do_test bot_files
+
+bot_files:
+	cp Libraries/*.h $(DIR)
+	cp Libraries/String/*.h $(DIR)
+	cp Libraries/Array/*.h $(DIR)
+	cp Libraries/Map/*.h $(DIR)
+	cp Libraries/OS/*.h $(DIR)
+	cp Libraries/Net/*.h $(DIR)
+	echo -ne '\x1b32m[ + ]\x1b[0m All headers copied to $(DIR)...!\n'
 
 install:
 	sudo apt update -y && apt upgrade -y

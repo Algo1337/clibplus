@@ -5,6 +5,7 @@
 
 #include "../global.h"
 #include "../global_memory.h"
+#include "../Array/arr.h"
 
 typedef struct str {
     char            *data;      // String Data
@@ -26,6 +27,7 @@ typedef struct str {
     long            (*CountSubstr)          (struct str *s, const char *substr);
     long            (*FindSubstr)           (struct str *s, const char *substr);
     char *          (*GetSubstr)            (struct str *s, int start, int end);
+    int             (*RemoveSubstr)         (struct str *s, int start, int end);
     long            (*StartsWith)           (struct str *s, const char *str);
     long            (*EndsWith)             (struct str *s, const char *str);
     long            (*IsUppercase)          (struct str *s);
@@ -128,6 +130,11 @@ long    __CountSubstr(str *s, const char *substr);
 //      Get a substring from start to end position of the string
 //
 char    *get_substr(str *s, int start, int end);
+
+//
+//
+//
+int     remove_substr(str *s, int start, int end);
 
 //
 //      Check if the string starts with a substring provided

@@ -56,7 +56,7 @@ Installing the extension library is just as easy as
 
 ```
 git clone https://github.com/Algo1337/clibplus.git
-cd C-System-*; make build; make cp
+cd clibplus; make build; make cp
 ```
 
 *Include the header*

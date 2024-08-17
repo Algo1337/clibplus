@@ -5,7 +5,7 @@
 
 # About
 
-This is a package that extend the minimum linux built-in packages to abstract low-level functions. [View the list](https://github.com/advancedalgorithm/C-System-Mixed-Standard-Lib-Extension-Package?tab=readme-ov-file#list-of-packages) of included libraries for more information.
+This is a package that extend the minimum linux built-in packages to abstract low-level functions. [View the list](https://github.com/Algo1337/clibplus?tab=readme-ov-file#list-of-includes-to-certain-sub-libs) of included libraries for more information.
 Please note that using this package can increase binary size due to certain libs being used within each-other. Which wouldn't be any difference from using a higher-level language. If you aren't creating application that will proform protection check-sum operation and need better proformance.
 
 <b>Why?</b>
@@ -55,7 +55,7 @@ To avoid re-inventing the wheels for future projects and to attract more develop
 Installing the extension library is just as easy as 
 
 ```
-git clone https://https://github.com/advancedalgorithm/C-System-Mixed-Standard-Lib-Extension-Package.git
+git clone https://github.com/Algo1337/clibplus.git
 cd C-System-*; make build; make cp
 ```
 

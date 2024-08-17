@@ -73,3 +73,7 @@ cd C-System-*; make build; make cp
 <clibs/Net/socket.h>      : -lctypes
 <clibs/Net/request.h>     : -lssl -lcrypto
 ```
+
+# Have Questions Or Want to Contribute?
+
+Join our discord server and get in contact with a dev to get started! [Server](https://discord.gg/ovpn)

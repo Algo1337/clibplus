@@ -23,7 +23,7 @@ HTTPClientResponse *RequestURL(const char *url, Map *headers, Request_T type) {
     http->headers = headers;
 
     init_openssl();
-    http->ctx = create_context_alt();
+    http->ctx = create_ssl_context();
     if(http->ctx == NULL)
         err_n_exit("[ + ] Error, OpenSSL IS SHIT\n");
 
@@ -31,19 +31,29 @@ HTTPClientResponse *RequestURL(const char *url, Map *headers, Request_T type) {
     if(sockfd < 0)
         err_n_exit("[ HTTPClient ] Failed to create http request!");
 
-    http->ssl = ssl_handshake(http->ctx, sockfd, hostname);
+    http->ssl = SSL_new(http->ctx);
+    SSL_set_fd(http->ssl, sockfd);
 
-    switch(type) {
-        case __GET: { __Send_HTTP_GET_Request(http); }
-        // case __POST: { }
-        default: {
-            printf("ERROR");
-            return NULL;
+    // Establish an SSL connection
+    HTTPClientResponse *r;
+    if (SSL_connect(http->ssl) <= 0) {
+        ERR_print_errors_fp(stderr);
+    } else {
+        printf("Connected with %s encryption\n", SSL_get_cipher(http->ssl));
+        verify_certificate(http->ssl);
+
+        switch(type) {
+            case __GET: { __Send_HTTP_GET_Request(http); }
+            // case __POST: { }
+            default: {
+                printf("ERROR");
+                return NULL;
+            }
         }
+        
+        r = __Parse_HTTP_Response(http);
+        r = parse_raw_traffic(r->body->data);
     }
-    
-    HTTPClientResponse *r = __Parse_HTTP_Response(http);
-    r = parse_raw_traffic(r->body->data);
 
     SSL_shutdown(http->ssl);
     SSL_free(http->ssl);
@@ -109,11 +119,13 @@ Arr *parse_url(const char *data) {
     if(hostname->EndsWith(hostname, "/"))
         hostname->ReplaceString(hostname, "/", "");
     
+    
+    printf("%s\n", hostname->data);
     args = Array(NULL);
     args->Utils(args, __APPEND, hostname->data);
     args->Utils(args, __APPEND, "/");
 
-    printf("%s => %s", args->arr[0], args->arr[1]);
+    printf("%s => %s\n", args->arr[0], args->arr[1]);
 
     free(hostname);
     free(path);

@@ -3,129 +3,204 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
 
-#define PORT 443
-#define CERT_FILE "server.crt"
-#define KEY_FILE "server.key"
-#define BUFFER_SIZE 1024
+#include "web.h"
 
-// Initialize OpenSSL and create a new SSL context
-SSL_CTX* init_ssl_context(void) {
-    SSL_CTX *ctx;
+typedef void (*route_handler_t)(HTTPServer *s, HTTPRequest *r, int request_socket);
 
-    SSL_load_error_strings();   
-    OpenSSL_add_ssl_algorithms();
+HTTPServer *StartWebServer(const char *ip, int port, int auto_search_dir) {
+    if(port == 0)
+        return NULL;
 
-    ctx = SSL_CTX_new(TLS_server_method());
-    if (!ctx) {
-        perror("Unable to create SSL context");
-        ERR_print_errors_fp(stderr);
-        exit(EXIT_FAILURE);
-    }
+    HTTPServer *s = (HTTPServer *)malloc(sizeof(HTTPServer));
 
-    // Set the certificate and key
-    if (SSL_CTX_use_certificate_file(ctx, CERT_FILE, SSL_FILETYPE_PEM) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(EXIT_FAILURE);
-    }
+    if(ip != NULL)
+        s->ip = strdup(ip);
+    s->port = port;
+    s->routes = create_map();
 
-    if (SSL_CTX_use_PrivateKey_file(ctx, KEY_FILE, SSL_FILETYPE_PEM) <= 0 ) {
-        ERR_print_errors_fp(stderr);
-        exit(EXIT_FAILURE);
-    }
+    if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+        err_n_exit("[ x ] Error, Unable to create socket");
 
-    return ctx;
+    s->address.sin_family = AF_INET;
+    s->address.sin_addr.s_addr = INADDR_ANY;
+    s->address.sin_port = htons(port);
+
+    if (bind(s->socket, (struct sockaddr *)&s->address, sizeof(s->address)) < 0)
+        err_n_exit("[ x ] Error, Unable to bind socket");
+
+    return s;
 }
 
-// Clean up SSL context and free allocated resources
-void cleanup_ssl(SSL_CTX *ctx) {
-    SSL_CTX_free(ctx);
-    EVP_cleanup();
+int AddRoute(HTTPServer *s, const char *route, void *fn) {
+    if(s == NULL || s->routes == NULL)
+        return 0;
+
+    Multi_T *route_fn = (Multi_T *)malloc(sizeof(Multi_T));
+    route_fn->name = strdup(route);
+    route_fn->fn = fn;
+
+    s->routes->keys[s->routes->idx] = route_fn;
+    s->routes->idx++;
+    s->routes->keys = (void **)realloc(s->routes->keys, s->routes->idx + 1);
+    return 1;
 }
 
-// Create a socket, bind it to the specified port, and listen for connections
-int create_socket(void) {
-    int sockfd;
-    struct sockaddr_in addr;
+void StartListener(HTTPServer *s) {
+    if (listen(s->socket, 999) < 0)
+        return;
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-        perror("Unable to create socket");
-        exit(EXIT_FAILURE);
-    }
+    printf("Server is listening on port %d\n", s->port);
 
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(PORT);
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    int request_socket = 0, addrlen = sizeof(s->address);
+    while(1) {
+        if((request_socket = accept(s->socket, (struct sockaddr *)&s->address, (socklen_t*)&addrlen)) < 0)
+            continue;
 
-    if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-        perror("Unable to bind to port");
-        exit(EXIT_FAILURE);
-    }
+        ParseAndCheckForRoute(s, request_socket);
 
-    if (listen(sockfd, 1) < 0) {
-        perror("Unable to listen");
-        exit(EXIT_FAILURE);
-    }
-
-    return sockfd;
-}
-
-// Handle communication with a single client
-void handle_client(SSL *ssl) {
-    char buffer[BUFFER_SIZE] = {0};
-    int bytes;
-
-    // Receive data from the client
-    bytes = SSL_read(ssl, buffer, sizeof(buffer));
-    if (bytes > 0) {
-        printf("Received message: \"%s\"\n", buffer);
-
-        // Send a response
-        const char *response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nHello, SSL World!\n";
-        SSL_write(ssl, response, strlen(response));
-    } else {
-        ERR_print_errors_fp(stderr);
+        close(request_socket);
     }
 }
 
-int main(int argc, char **argv) {
-    SSL_CTX *ctx;
-    int sockfd;
-    struct sockaddr_in addr;
-    uint len = sizeof(addr);
+void *ParseAndCheckForRoute(HTTPServer *s, int request_socket) {
+    char buffer[4096];
+    memset(buffer, '\0', 4096);
+    read(request_socket, buffer, 4095);
 
-    // Initialize SSL and create context
-    ctx = init_ssl_context();
+    HTTPRequest *r = ParseHTTPTraffic(buffer);
 
-    // Create and bind socket
-    sockfd = create_socket();
-
-    while (1) {
-        int client;
-        SSL *ssl;
-
-        // Accept incoming connections
-        client = accept(sockfd, (struct sockaddr*)&addr, &len);
-        if (client < 0) {
-            perror("Unable to accept connection");
-            exit(EXIT_FAILURE);
+    int chk = 0;
+    if(s->routes != NULL) {
+        for(int i = 0; i < s->routes->idx; i++) {
+            if(!strcmp( (char *)((Key *)s->routes->keys[i])->name, r->route->data)) {
+                chk = 1;
+                ((route_handler_t)((Key *)s->routes->keys[i])->value)(s, r, request_socket);
+                break;
+            }
         }
-        
-        ssl = SSL_new(ctx);
-        SSL_set_fd(ssl, client);
 
-        SSL_accept(ssl) <= 0 ? ERR_print_errors_fp(stderr) : handle_client(ssl);
+        if(chk == 0)
+            SendResponse(s, request_socket, NOT_FOUND, NULL, "404.html", NULL);
+    } else {
+        SendResponse(s, request_socket, NOT_FOUND, NULL, "404.html", NULL);
+    }
+}
 
-        SSL_shutdown(ssl);
-        SSL_free(ssl);
-        close(client);
+HTTPRequest *ParseHTTPTraffic(const char *data) {
+    str *raw_data = string(data);
+    char **lines = raw_data->Split(raw_data, "\n");
+    int line_count = count_arr(lines);
+
+    Map *headers = create_map();
+    str *body = string(NULL);
+    HTTPRequest *r = (HTTPRequest *)malloc(sizeof(HTTPRequest));
+
+    if(line_count == 0)
+        return r;
+
+    str *web_info = string(lines[0]);
+    char **arg = web_info->Split(web_info, " ");
+    r->request_type = string(arg[0]);
+    if(count_arr(arg) > 1)
+        r->route = string(arg[1]);
+
+    free(web_info);
+    free(arg);
+
+    int stop = 0;
+    for(int i = 1; i < line_count; i++)
+    {
+        if(!strcmp(lines[i], "") || !strcmp(lines[i], "2be")) {
+            stop = 1;
+            continue;
+        } else if(!strcmp(lines[i], "0")) {
+            break;
+        }
+
+        str *line = string(lines[i]);
+        char **args = line->Split(line, ":");
+        int arg_count = count_arr(args);
+
+        line->Strip(line);
+        if(strcmp(line->data, "") == 0) {
+            stop = 1;
+            continue;
+        }
+
+        if(arg_count >= 2 && !stop) {
+            str *value = string(lines[i]);
+            value->ReplaceString(value, args[0], "");
+            
+            headers->Utils(headers, __ADD_KEY, args[0], value->data);
+            free(value);
+        } else {
+            body->AppendString(body, lines[i]);
+        }
+
+        free(line);
+        free(args);
     }
 
-    // Clean up resources
-    close(sockfd);
-    cleanup_ssl(ctx);
-    return 0;
+    free(raw_data);
+    free(lines);
+    free(arg);
+    r->body = body;
+    r->headers = headers;
+    return r;
+}
+
+void SendResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *headers, const char *html_file, Map *vars) { 
+    str *req_data = string("HTTP/1.1\r\n");
+
+    if(headers != NULL) {
+        for(int i = 0; i < headers->idx; i++) {
+            req_data->AppendString(req_data, (char *)((Key *)headers->keys[i])->name);
+            req_data->AppendString(req_data, ": ");
+            req_data->AppendString(req_data, (char *)((Key *)headers->keys[i])->value);
+            req_data->AppendString(req_data, "\r\n");
+        }
+    }
+    req_data->AppendString(req_data, "Connection: close\r\n\r\n");
+
+    if(html_file != NULL) {
+        if(!access(html_file, F_OK) == 0) {
+            write(request_socket, req_data->data, strlen(req_data->data));
+            free(req_data); 
+            return;
+        }
+
+        cFile *file = Openfile(html_file);
+        file->Read(file);
+        if(vars != NULL) {
+            str *raw_html_data = string(file->data);
+            // parse file
+
+            for(int i = 0; i < vars->idx; i++)
+                if(strstr(raw_html_data->data, (char *)((Key *)vars->keys[i])->name))
+                    raw_html_data->ReplaceString(raw_html_data, (char *)((Key *)vars->keys[i])->name, (char *)((Key *)vars->keys[i])->value);
+
+
+            file->Close(file);
+            req_data->AppendString(req_data, file->data);
+            free(file);
+            free(raw_html_data);
+            write(request_socket, req_data->data, strlen(req_data->data));
+            free(req_data); 
+            return;
+        }
+
+        req_data->AppendString(req_data, file->data);
+        write(request_socket, req_data->data, strlen(req_data->data));
+        free(req_data);
+        free(file);
+        return;
+    }
+
+    write(request_socket, req_data->data, strlen(req_data->data));
+    free(req_data); 
+}
+
+int CloseServer(HTTPServer *s) {
+    close(s->socket);
 }

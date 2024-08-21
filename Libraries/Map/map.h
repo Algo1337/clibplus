@@ -48,6 +48,11 @@ typedef struct Key {
     char        *value;     // Key Value
 } Key;
 
+typedef struct Multi_T {
+    char    *name;
+    void    *fn;
+} Multi_T;
+
 // Map Structure for Keys
 typedef struct Map {
     void        **keys;     // Keys

@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+
+#include "ssl.h"
 
 void init_openssl() {
     SSL_load_error_strings();
@@ -17,56 +16,39 @@ void cleanup_openssl() {
     EVP_cleanup();
 }
 
-SSL_CTX *create_context() {
+SSL_CTX* create_ssl_context() {
     const SSL_METHOD *method;
     SSL_CTX *ctx;
 
-    method = SSLv23_client_method();
-
-    ctx = SSL_CTX_new(method);
-    if(!ctx)
-        return NULL;
-
-    return ctx;
-}
-
-SSL_CTX *create_context_alt() {
-    const SSL_METHOD *method;
-    SSL_CTX *ctx;
-
-    method = TLS_client_method();  // Use the latest method supporting TLS 1.2 and 1.3
-
+    method = SSLv23_client_method(); // TLS_client_method() in newer versions
     ctx = SSL_CTX_new(method);
     if (!ctx) {
-        perror("ERROR");
-        return NULL;
-    }
-
-    // Optional: Disable older, insecure versions of SSL/TLS
-    SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1);
-
-    if(SSL_CTX_use_certificate_file(ctx, "cert.crt", SSL_FILETYPE_PEM) <= 0)
-        return NULL;
-
-    if(SSL_CTX_use_PrivateKey_file(ctx, "private.key", SSL_FILETYPE_PEM) <= 0)
-        return NULL;
-
-    return ctx;
-}
-
-SSL *ssl_handshake(SSL_CTX *ctx, int sockfd, const char *hostname) {
-    SSL *ssl = SSL_new(ctx);
-    SSL_set_fd(ssl, sockfd);
-
-    // Set the hostname for SNI (Server Name Indication)
-    SSL_set_tlsext_host_name(ssl, hostname);
-
-    if (SSL_connect(ssl) <= 0) {
+        perror("Unable to create SSL context");
         ERR_print_errors_fp(stderr);
-        SSL_free(ssl);
-        close(sockfd);
         exit(EXIT_FAILURE);
     }
 
-    return ssl;
+    return ctx;
+}
+
+void verify_certificate(SSL *ssl) {
+    X509 *cert = SSL_get_peer_certificate(ssl);
+    if (cert) {
+        printf("Server certificate:\n");
+        char *line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+        printf("Subject: %s\n", line);
+        free(line);
+        line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+        printf("Issuer: %s\n", line);
+        free(line);
+        X509_free(cert);
+    } else {
+        printf("No certificate provided by the server.\n");
+    }
+
+    if (SSL_get_verify_result(ssl) != X509_V_OK) {
+        printf("Certificate verification failed!\n");
+    } else {
+        printf("Certificate verification succeeded.\n");
+    }
 }

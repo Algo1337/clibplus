@@ -21,19 +21,14 @@ void    init_openssl();
 //
 //      Create OpenSSL
 //
-SSL_CTX *create_context();
+void    cleanup_openssl();
 
 //
-SSL_CTX *create_context_alt();
+SSL_CTX *create_ssl_context();
 
 //
 //      SSL Handshake
 //
-SSL     *ssl_handshake(SSL_CTX *ctx, int sockfd, const char *hostname);
-
-//
-//      Clean Up the OpenSSL Structure
-//
-void    cleanup_openssl();
+void verify_certificate(SSL *ssl);
 
 #endif

@@ -41,26 +41,13 @@ void *source_code_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
 void *test_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
     printf("[ \x1b[32m/post\x1b[0m ] Page Visited\n");
 
+    str *key = string("Input: ");
     if(!strcmp(r->request_type->data, "POST"))
-        if(r->queries->Utils(r->queries, __IN_KEYS, "NIGGER"))
-            if(r->queries->Utils(r->queries, __IN_KEYS, "name_input"))
-                printf("Name Submitted: %s\n", (char *)r->queries->Utils(r->queries, __GET_KEY_VALUE, "name_input"));
+        if(r->queries->Utils(r->queries, __IN_KEYS, "name_input"))
+            key->AppendString(key, (char *)r->queries->Utils(r->queries, __GET_KEY_VALUE, "name_input"));
 
-    Map *headers = create_map();
-    headers->Utils(headers, __ADD_KEY, "Content-Type", "text/html; charset=UTF-8");
-    headers->Utils(headers, __ADD_KEY, "Connection", "close");
-    
-    SendResponse(s, request_socket, OK, headers, "pages/post.html", NULL);
-}
-
-void get_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
-    printf("[ \x1b[32m/get\x1b[0m ] Page Visited\n");
-
-    char *key = "N/A";
-    if(retrieve_get_parameter(s, r) > 0) {
-        key = (char *)r->queries->Utils(r->queries, __GET_KEY_VALUE, "q");
-
-        printf("Parameter Provided: q => %s\n", key);
+    if(!strcmp(key->data, "Input: ")) {
+        key->AppendString(key, "N/A");
     }
 
     Map *headers = create_map();
@@ -68,7 +55,29 @@ void get_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
     headers->Utils(headers, __ADD_KEY, "Connection", "close");
 
     Map *vars = create_map();
-    vars->Utils(vars, __ADD_KEY, "$INPUT", key);
+    vars->Utils(vars, __ADD_KEY, "$INPUT", key->data);
+    
+    SendResponse(s, request_socket, OK, headers, "pages/post.html", vars);
+}
+
+void get_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
+    printf("[ \x1b[32m/get\x1b[0m ] Page Visited\n");
+
+    str *key = string("Input: ");
+    if(retrieve_get_parameter(s, r) > 0) {
+        key->AppendString(key, (char *)r->queries->Utils(r->queries, __GET_KEY_VALUE, "q"));
+
+        printf("%s\n", key->data);
+    } else {
+        key->AppendString(key, "N/A");
+    }
+
+    Map *headers = create_map();
+    headers->Utils(headers, __ADD_KEY, "Content-Type", "text/html; charset=UTF-8");
+    headers->Utils(headers, __ADD_KEY, "Connection", "close");
+
+    Map *vars = create_map();
+    vars->Utils(vars, __ADD_KEY, "$INPUT", key->data);
 
     SendResponse(s, request_socket, OK, headers, "pages/get.html", vars);
 }

@@ -109,7 +109,7 @@ char *__getKeyValue(Map *m, const char *key) {
 }
 
 long __InKeys(Map *m, const char *key) {
-    if(m == NULL || key == NULL)
+    if(m == NULL || strlen(key) == 0)
         return 0;
 
     for(int i = 0; i < m->idx; i++) {

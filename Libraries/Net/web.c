@@ -65,7 +65,7 @@ void StartListener(HTTPServer *s) {
 }
 
 int isRouteValid(HTTPServer *s, str *route) {
-    if(!strcmp(route->data, "/")) {
+    if(route->data != NULL && !strcmp(route->data, "/")) {
         route->data = strdup("/index");
         route->idx = strlen("/index") + 1;
     }

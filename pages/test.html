@@ -1,11 +1,57 @@
 <html>
+<header>
+	<title>Test Page</title>
+</header>
+
+<style>
+
+.nav_box {
+	background-color: #000;
+	height: 100px;
+	width: 400px;
+}
+.box {
+	background-color: #000;
+	width: 400px;
+	height: 500px;
+	margin-right: 10px;
+	padding: 10px;
+}
+.news_box {
+	background-color: #fff;
+	color: #000;
+}
+.title {
+	padding-top: 10px;
+	color: #fff;
+	size: 25px;
+}
+.nav_option {
+	background-color: #fff;
+	width: 100px;
+}
+.gay_text {
+	background-color: transparent;
+	color: #000;
+	border: solid;
+}
+.lul {
+	display: inline-flex;
+}
+.active_opt {
+	background-color: transparent;
+	border: solid;
+	color: #00d211;
+}
+</style>
+
 <body>
-    <div id="live-text">Waiting for updates...</div>
-    <script>
-        const eventSource = new EventSource('/events');
-        eventSource.onmessage = function(event) {
-            document.getElementById('live-text').innerText = event.data;
-        };
-    </script>
+    <center>
+        <form method="post">
+            <p id="SKID" name="SKID">TEST<p>
+            <input id="name_input" name="name_input" type="text" placeholder="NAME"/><br />
+            <button id="NIGGER" name="NIGGER" type="submit" style="width: 50px; height: 10px;" value="GAY"></button><br />
+        </form><br />
+    </center>
 </body>
 </html>

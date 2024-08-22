@@ -1,0 +1,11 @@
+<html>
+<body>
+    <div id="live-text">Waiting for updates...</div>
+    <script>
+        const eventSource = new EventSource('/events');
+        eventSource.onmessage = function(event) {
+            document.getElementById('live-text').innerText = event.data;
+        };
+    </script>
+</body>
+</html>

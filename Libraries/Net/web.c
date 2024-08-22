@@ -18,6 +18,7 @@ HTTPServer *StartWebServer(const char *ip, int port, int auto_search_dir) {
         s->ip = strdup(ip);
     s->port = port;
     s->routes = create_map();
+    s->routes->idx = 0;
 
     if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
         err_n_exit("[ x ] Error, Unable to create socket");
@@ -42,7 +43,7 @@ int AddRoute(HTTPServer *s, const char *route, void *fn) {
 
     s->routes->keys[s->routes->idx] = route_fn;
     s->routes->idx++;
-    s->routes->keys = (void **)realloc(s->routes->keys, s->routes->idx + 1);
+    s->routes->keys = (void **)realloc(s->routes->keys, (sizeof(void *) * s->routes->idx) + 1);
     return 1;
 }
 
@@ -63,28 +64,59 @@ void StartListener(HTTPServer *s) {
     }
 }
 
+int isRouteValid(HTTPServer *s, str *route) {
+    for(int i = 0; i < s->routes->idx; i++)
+        if(strstr((char *)((Key *)s->routes->keys[i])->name, route->data))
+            return i;
+
+    return -1;
+}
+
 void *ParseAndCheckForRoute(HTTPServer *s, int request_socket) {
     char buffer[4096];
     memset(buffer, '\0', 4096);
     read(request_socket, buffer, 4095);
 
     HTTPRequest *r = ParseHTTPTraffic(buffer);
+    if(!strcmp(r->request_type->data, "POST"))
+        get_post_queries(s, r);
 
     int chk = 0;
     if(s->routes != NULL) {
-        for(int i = 0; i < s->routes->idx; i++) {
-            if(!strcmp( (char *)((Key *)s->routes->keys[i])->name, r->route->data)) {
-                chk = 1;
-                ((route_handler_t)((Key *)s->routes->keys[i])->value)(s, r, request_socket);
-                break;
-            }
+        chk = isRouteValid(s, r->route);
+        if(chk > -1) {
+            ((route_handler_t)((Key *)s->routes->keys[chk])->value)(s, r, request_socket);
+            return 0;
         }
 
-        if(chk == 0)
-            SendResponse(s, request_socket, NOT_FOUND, NULL, "404.html", NULL);
+        SendResponse(s, request_socket, NOT_FOUND, NULL, "404.html", NULL);
     } else {
         SendResponse(s, request_socket, NOT_FOUND, NULL, "404.html", NULL);
     }
+}
+
+void get_post_queries(HTTPServer *s, HTTPRequest *r) {
+    Map *queries = create_map();
+    char **args = (char **)r->body->Split(r->body, "&");
+
+    int count = count_arr(args);
+    if(count < 1)
+        return;
+
+    for(int i = 0; i < count; i++) {
+        str *query = string(args[i]);
+        char **query_args = query->Split(query, "=");
+        int arg_count = count_arr(query_args);
+
+        if(arg_count > 1)
+            queries->Utils(queries, __ADD_KEY, query_args[0], query_args[1]);
+
+        free(query);
+        free(query_args);
+    }
+
+    free(args);
+    r->queries = queries;
 }
 
 HTTPRequest *ParseHTTPTraffic(const char *data) {
@@ -101,9 +133,15 @@ HTTPRequest *ParseHTTPTraffic(const char *data) {
 
     str *web_info = string(lines[0]);
     char **arg = web_info->Split(web_info, " ");
+
+    int c = 0;
+
     r->request_type = string(arg[0]);
-    if(count_arr(arg) > 1)
-        r->route = string(arg[1]);
+    if(count_arr(arg) > 0)
+        if(arg[1] == NULL)
+            return r;
+            
+    r->route = string(arg[1]);
 
     free(web_info);
     free(arg);
@@ -151,7 +189,7 @@ HTTPRequest *ParseHTTPTraffic(const char *data) {
 }
 
 void SendResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *headers, const char *html_file, Map *vars) { 
-    str *req_data = string("HTTP/1.1\r\n");
+    str *req_data = string("HTTP/1.1 200 OK\r\n");
 
     if(headers != NULL) {
         for(int i = 0; i < headers->idx; i++) {
@@ -161,7 +199,6 @@ void SendResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *hea
             req_data->AppendString(req_data, "\r\n");
         }
     }
-    req_data->AppendString(req_data, "Connection: close\r\n\r\n");
 
     if(html_file != NULL) {
         if(!access(html_file, F_OK) == 0) {

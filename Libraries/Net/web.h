@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include "request.h"
 
 typedef struct HTTPServer {
     char                *ip;
@@ -24,11 +25,12 @@ typedef struct HTTPServer {
 } HTTPServer;
 
 typedef struct HTTPRequest {
-    str             *route;         // Page Name
-    str             *full_route;    // Full Route Path
-    str             *request_type;  // Receiving GET/POST
-    Map             *headers;       // Headers
-    str             *body;          // Response Body Of the Request
+    str                 *route;         // Page Name
+    str                 *full_route;    // Full Route Path
+    str                 *request_type;  // Receiving GET/POST
+    Map                 *headers;       // Headers
+    Map                 *queries;       // Queries for POST request
+    str                 *body;          // Response Body Of the Request
 } HTTPRequest;
 
 typedef Map Headers;
@@ -49,9 +51,19 @@ int                     AddRoute(HTTPServer *s, const char *route, void *fn);
 void                    StartListener(HTTPServer *s);
 
 //
+//                      Check if route is valid
+//
+int                     isRouteValid(HTTPServer *s, str *route);
+
+//
 //                      Execute Parser & Check for Routes
 //
 void                    *ParseAndCheckForRoute(HTTPServer *s, int request_socket);
+
+//
+//                      Get post queries
+//
+void                    get_post_queries(HTTPServer *s, HTTPRequest *r);
 
 //
 //                      Parse the incoming HTTP Server Request

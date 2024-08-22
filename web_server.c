@@ -39,7 +39,7 @@ void *source_code_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
 }
 
 void *test_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
-    printf("[ \x1b[32m/test\x1b[0m ] Page Visited\n");
+    printf("[ \x1b[32m/post\x1b[0m ] Page Visited\n");
 
     if(!strcmp(r->request_type->data, "POST"))
         if(r->queries->Utils(r->queries, __IN_KEYS, "NIGGER"))
@@ -50,14 +50,16 @@ void *test_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
     headers->Utils(headers, __ADD_KEY, "Content-Type", "text/html; charset=UTF-8");
     headers->Utils(headers, __ADD_KEY, "Connection", "close");
     
-    SendResponse(s, request_socket, OK, headers, "pages/test.html", NULL);
+    SendResponse(s, request_socket, OK, headers, "pages/post.html", NULL);
 }
 
 void get_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
     printf("[ \x1b[32m/get\x1b[0m ] Page Visited\n");
 
+    char *key = "N/A";
     if(retrieve_get_parameter(s, r) > 0) {
-        char *key =(char *)r->queries->Utils(r->queries, __GET_KEY_VALUE, "q");
+        key = (char *)r->queries->Utils(r->queries, __GET_KEY_VALUE, "q");
+
         printf("Parameter Provided: q => %s\n", key);
     }
 
@@ -65,7 +67,10 @@ void get_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
     headers->Utils(headers, __ADD_KEY, "Content-Type", "text/html; charset=UTF-8");
     headers->Utils(headers, __ADD_KEY, "Connection", "close");
 
-    SendResponse(s, request_socket, OK, headers, "pages/get.html", NULL);
+    Map *vars = create_map();
+    vars->Utils(vars, __ADD_KEY, "$INPUT", key);
+
+    SendResponse(s, request_socket, OK, headers, "pages/get.html", vars);
 }
 
 int main() {
@@ -73,7 +78,7 @@ int main() {
     AddRoute(s, "/index", index_page);
     AddRoute(s, "/doc", doc_page);
     AddRoute(s, "/source_code", source_code_page);
-    AddRoute(s, "/test", test_page);
+    AddRoute(s, "/post", test_page);
     AddRoute(s, "/get", get_page);
 
     StartListener(s);

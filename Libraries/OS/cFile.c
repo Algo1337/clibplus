@@ -50,5 +50,7 @@ int __write2file(cFile *f, const char *data) {
 
 void __Closefile(cFile *f) {
     if(f->path == NULL)
-        free(f->path);
+        f->path = NULL;
+
+    fclose(f->fd);
 }

@@ -65,6 +65,11 @@ void StartListener(HTTPServer *s) {
 }
 
 int isRouteValid(HTTPServer *s, str *route) {
+    if(!strcmp(route->data, "/")) {
+        route->data = strdup("/index");
+        route->idx = strlen("/index") + 1;
+    }
+
     for(int i = 0; i < s->routes->idx; i++) {
         if((Key *)s->routes->keys[i] == NULL)
             break;
@@ -136,12 +141,6 @@ int retrieve_get_parameter(HTTPServer *s, HTTPRequest *r) {
     Map *queries = create_map();
     char **args = (char **)r->route->Split(r->route, "?");
     str *parameters = string(args[1]);
-
-    // if(parameters->data != NULL && !strstr(parameters->data, "&")) {
-    //     char **paras = parameters->Split(parameters, "=");
-    //     queries->Utils(queries, __ADD_KEY, paras[0], paras[1]);
-    //     return 1;
-    // }
 
     args = parameters->Split(parameters, "&");
     int count = count_arr(args);
@@ -253,16 +252,21 @@ void SendResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *hea
             str *raw_html_data = string(file->data);
             // parse file
 
-            for(int i = 0; i < vars->idx; i++)
+            for(int i = 0; i < vars->idx; i++) {
+                if((Key *)vars->keys[i] == NULL)
+                    break;
+
                 if(strstr(raw_html_data->data, (char *)((Key *)vars->keys[i])->name))
                     raw_html_data->ReplaceString(raw_html_data, (char *)((Key *)vars->keys[i])->name, (char *)((Key *)vars->keys[i])->value);
+            }
 
-            file->Close(file);
-            req_data->AppendString(req_data, file->data);
-            free(file);
-            free(raw_html_data);
+            req_data->AppendString(req_data, raw_html_data->data);
             write(request_socket, req_data->data, strlen(req_data->data));
+
+            free(raw_html_data);
             free(req_data); 
+
+            free(file);
             return;
         }
 

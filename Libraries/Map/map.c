@@ -112,11 +112,15 @@ long __InKeys(Map *m, const char *key) {
     if(m == NULL || key == NULL)
         return 0;
 
-    for(int i = 0; i < m->idx; i++)
+    for(int i = 0; i < m->idx; i++) {
+        if((Key *)m->keys[i] == NULL)
+            break;
+            
         if(strcmp((char *)((Key *)m->keys[i])->name, key) == 0)
             return 1;
+    }
 
-    return 1;
+    return 0;
 }
 
 char *encode_json(Map *m) {

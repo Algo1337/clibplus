@@ -66,6 +66,11 @@ void                    *ParseAndCheckForRoute(HTTPServer *s, int request_socket
 void                    get_post_queries(HTTPServer *s, HTTPRequest *r);
 
 //
+//                      Retrieve GET Parameters
+// 
+int                    retrieve_get_parameter(HTTPServer *s, HTTPRequest *r);
+
+//
 //                      Parse the incoming HTTP Server Request
 //
 HTTPRequest             *ParseHTTPTraffic(const char *data);

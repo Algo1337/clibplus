@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <clib/Array/arr.h>
 #include <clib/Map/map.h>
 #include <clib/Net/web.h>
 #include <clib/Net/request.h>
@@ -52,12 +53,28 @@ void *test_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
     SendResponse(s, request_socket, OK, headers, "pages/test.html", NULL);
 }
 
+void get_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
+    printf("[ \x1b[32m/get\x1b[0m ] Page Visited\n");
+
+    if(retrieve_get_parameter(s, r) > 0) {
+        char *key =(char *)r->queries->Utils(r->queries, __GET_KEY_VALUE, "q");
+        printf("Parameter Provided: q => %s\n", key);
+    }
+
+    Map *headers = create_map();
+    headers->Utils(headers, __ADD_KEY, "Content-Type", "text/html; charset=UTF-8");
+    headers->Utils(headers, __ADD_KEY, "Connection", "close");
+
+    SendResponse(s, request_socket, OK, headers, "pages/get.html", NULL);
+}
+
 int main() {
     HTTPServer *s = StartWebServer(NULL, 80, 0);
     AddRoute(s, "/index", index_page);
     AddRoute(s, "/doc", doc_page);
     AddRoute(s, "/source_code", source_code_page);
     AddRoute(s, "/test", test_page);
+    AddRoute(s, "/get", get_page);
 
     StartListener(s);
     return 0;

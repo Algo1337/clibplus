@@ -65,9 +65,16 @@ void StartListener(HTTPServer *s) {
 }
 
 int isRouteValid(HTTPServer *s, str *route) {
-    for(int i = 0; i < s->routes->idx; i++)
-        if(strstr((char *)((Key *)s->routes->keys[i])->name, route->data))
+    for(int i = 0; i < s->routes->idx; i++) {
+        if((Key *)s->routes->keys[i] == NULL)
+            break;
+
+        if(!strcmp((char *)((Key *)s->routes->keys[i])->name, route->data))
             return i;
+        
+        if( (long)route->StartsWith(route, (char *)((Key *)s->routes->keys[i])->name) )
+            return i;
+    }
 
     return -1;
 }
@@ -78,6 +85,9 @@ void *ParseAndCheckForRoute(HTTPServer *s, int request_socket) {
     read(request_socket, buffer, 4095);
 
     HTTPRequest *r = ParseHTTPTraffic(buffer);
+    if(r->request_type == NULL)
+        return NULL;
+
     if(!strcmp(r->request_type->data, "POST"))
         get_post_queries(s, r);
 
@@ -117,6 +127,36 @@ void get_post_queries(HTTPServer *s, HTTPRequest *r) {
 
     free(args);
     r->queries = queries;
+}
+
+int retrieve_get_parameter(HTTPServer *s, HTTPRequest *r) {
+    if(!strstr(r->route->data, "?"))
+        return 0;
+
+    Map *queries = create_map();
+    char **args = (char **)r->route->Split(r->route, "?");
+    str *parameters = string(args[1]);
+
+    // if(parameters->data != NULL && !strstr(parameters->data, "&")) {
+    //     char **paras = parameters->Split(parameters, "=");
+    //     queries->Utils(queries, __ADD_KEY, paras[0], paras[1]);
+    //     return 1;
+    // }
+
+    args = parameters->Split(parameters, "&");
+    int count = count_arr(args);
+
+    if(count > 0) {
+        for(int i = 0; i < count; i++) {
+            str *para = string(args[i]);
+            char **para_args = para->Split(para, "=");
+            queries->Utils(queries, __ADD_KEY, para_args[0], para_args[1]);
+        }
+        r->queries = queries;
+        return 1;
+    }
+
+    return 0;
 }
 
 HTTPRequest *ParseHTTPTraffic(const char *data) {
@@ -216,7 +256,6 @@ void SendResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *hea
             for(int i = 0; i < vars->idx; i++)
                 if(strstr(raw_html_data->data, (char *)((Key *)vars->keys[i])->name))
                     raw_html_data->ReplaceString(raw_html_data, (char *)((Key *)vars->keys[i])->name, (char *)((Key *)vars->keys[i])->value);
-
 
             file->Close(file);
             req_data->AppendString(req_data, file->data);

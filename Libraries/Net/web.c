@@ -183,7 +183,6 @@ HTTPRequest *ParseHTTPTraffic(const char *data) {
     r->route = string(arg[1]);
 
     free(web_info);
-    free(arg);
 
     int stop = 0;
     for(int i = 1; i < line_count; i++)
@@ -250,7 +249,6 @@ void SendResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *hea
         file->Read(file);
         if(vars != NULL) {
             str *raw_html_data = string(file->data);
-            // parse file
 
             for(int i = 0; i < vars->idx; i++) {
                 if((Key *)vars->keys[i] == NULL)

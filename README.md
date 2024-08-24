@@ -47,7 +47,7 @@ To avoid re-inventing the wheels for future projects and to attract more develop
 ✅⚠️    Array Lib ( Could use more Higher-Level Methods similar to higher-level language(s) array module(s) )
 ✅⚠️    Map Lib
 🛠️⚠️    Request Lib
-⚠️      Web Server Lib
+🛠️⚠️    Web Server Lib
 ```
 
 # Install
@@ -59,19 +59,13 @@ git clone https://github.com/Algo1337/clibplus.git
 cd clibplus; make build; make cp
 ```
 
-*Include the header*
+*Include the header(s) & Compile flag(s)*
 
 ```
-#include <clibs/c_types.h>
-```
-
-*Compile flag*
-
-```
-
 <clibs/c_types.h>         : -lctypes
 <clibs/Net/socket.h>      : -lctypes
 <clibs/Net/request.h>     : -lssl -lcrypto
+<clibs/Net/web.h>         : -lssl -lcrypto
 ```
 
 # Have Questions Or Want to Contribute?

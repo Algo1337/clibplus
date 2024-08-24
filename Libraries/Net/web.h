@@ -22,6 +22,7 @@ typedef struct HTTPServer {
     Map                 *routes;
     struct sockaddr_in  address;
     SSL_CTX             *ssl_ctx;
+    char                *err_404_filepath;
 } HTTPServer;
 
 typedef struct HTTPRequest {
@@ -46,6 +47,11 @@ HTTPServer              *StartWebServer(const char *ip, const int port, int auto
 int                     AddRoute(HTTPServer *s, const char *route, void *fn);
 
 //
+//
+//
+int                     Add404Page(HTTPServer *s, const char *path);
+
+//
 //                      Listen for connections
 //
 void                    StartListener(HTTPServer *s);
@@ -53,7 +59,7 @@ void                    StartListener(HTTPServer *s);
 //
 //                      Check if route is valid
 //
-int                     isRouteValid(HTTPServer *s, str *route);
+int                     isRouteValid(HTTPServer *s, char *data);
 
 //
 //                      Execute Parser & Check for Routes
@@ -63,7 +69,7 @@ void                    *ParseAndCheckForRoute(HTTPServer *s, int request_socket
 //
 //                      Get post queries
 //
-void                    get_post_queries(HTTPServer *s, HTTPRequest *r);
+Map                    *get_post_queries(HTTPServer *s, HTTPRequest *r);
 
 //
 //                      Retrieve GET Parameters
@@ -81,7 +87,31 @@ HTTPRequest             *ParseHTTPTraffic(const char *data);
 void                    SendResponse(HTTPServer *s, int request_socket,StatusCode_T code, Map *headers, const char *html_file, Map *vars);
 
 //
+//
+//
+void                    SendRawResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *headers, const char *raww, Map *vars);
+
+//
 //                      Close The Server and Clean the HTTPServer struct
 //
 int                     CloseServer(HTTPServer *s);
+
+//
+//  == [ WEB UTILS ] ==
+//
+
+//
+//
+//
+str                     *construct_path(str *route, Map *parameters);
+
+//
+//
+//
+str                     *construct_js_var(Map *vars);
+
+//
+//
+//
+str                     *construct_js_input_var(str *route, Map *vars, Map *parameters);
 #endif

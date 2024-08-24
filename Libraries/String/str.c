@@ -18,6 +18,7 @@ str *string(const char *data) {
     s->FindCharAt           = findchar_at_count;
     s->Strip                = __Strip;
     s->StripCh2End          = __StripCh2End;
+    s->IsEmpty              = _IsEmpty;
     s->Trim                 = __Trim;
     s->TrimAtIdx            = __Trim_By_Idx;
     s->CountSubstr          = __CountSubstr;
@@ -136,6 +137,7 @@ long __Strip(str *s) {
         strncat(buffer, &s->data[i], sizeof(char));
 
     s->data = strdup(buffer);
+    s->idx = strlen(buffer) + 1;
     free(buffer);
 
     return (start > 0 && end < strlen(s->data) ? 1 : 0);
@@ -160,6 +162,21 @@ long __StripCh2End(str *s, const char start) {
     free(s->data);
     s->data = strdup(new);
     s->idx = strlen(new);
+
+    return 1;
+}
+
+long _IsEmpty(str *s) { 
+    if(s == NULL || s->data == NULL)
+        return -1;
+
+    for(int i = 0; i < s->idx; i++) {
+        if(s->data[i] == '\0')
+            break;
+
+        if(!isblank(s->data[i]))
+            return -1;
+    }
 
     return 1;
 }

@@ -1,0 +1,31 @@
+.news_box {
+    width: 400px;
+    height: 50px;
+    color: #fff;
+    margin: 10px;
+    align-items: center;
+    position: fixed;
+}
+
+.news {
+    margin: 5px;
+    display: inline-block;
+    background-color: #860600;
+    width: 400px;
+    padding-top: 0.2px;
+    padding-bottom: 0.2px;
+    padding-left: 10px;
+    border-radius: 25px;
+}
+
+.user_statistic {
+    padding: 5px;
+    background-color: transparent;
+    margin-top: 10px;
+    border-radius: 25px;
+    border-style: solid;
+    color: #fff;
+    display: inline-block;
+    position: fixed;
+    right: 3%;
+}

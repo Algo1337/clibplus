@@ -20,6 +20,7 @@ typedef struct str {
     long            (*CountChar)            (struct str *s, const char ch);
     long            (*FindChar)             (struct str *s, const char ch);
     long            (*FindCharAt)           (struct str *s, const char ch, int count);
+    long            (*IsEmpty)              (struct str *s);
     long            (*Strip)                (struct str *s);
     long            (*StripCh2End)          (struct str *s, const char start);
     long            (*Trim)                 (struct str *s, const char delim);
@@ -101,6 +102,11 @@ long    __Strip(str *s);
 //      Remove data from char to end of string
 //
 long    __StripCh2End(str *s, const char start);
+
+//
+//
+//
+long _IsEmpty(str *s);
 
 //
 //      Remove a char from string

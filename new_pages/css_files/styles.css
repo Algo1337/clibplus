@@ -121,3 +121,24 @@ body {
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
 }
+
+.login_box {
+    background-color: #131313; 
+    padding: 40px; 
+    border-style: solid; 
+    border-width: 8px;
+    border-radius: 10px; 
+    border-color: #474747;
+    transition: 1.5s;
+}
+
+.login_box:hover {
+    background-color: #131313; 
+    border-color: #fff;
+}
+
+.login_t {
+    color: #fff;
+    font-size: 25;
+    font-weight: bold;
+}

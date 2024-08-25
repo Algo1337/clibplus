@@ -132,6 +132,27 @@ void live_action_test_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
     SendResponse(s, request_socket, OK, headers, "pages/test.html", html_vars);
 }
 
+void *login_page(HTTPServer *s, HTTPRequest *r, int request_socket) {
+    
+    Map *vars = create_map();
+    cFile *css = Openfile("pages/css_files/styles.css");
+    cFile *button_css = Openfile("pages/css_files/buttons.css");
+    css->Read(css);
+    button_css->Read(button_css);
+    vars->Utils(vars, __ADD_KEY, "$CSS_FILE", css->data);
+    vars->Utils(vars, __ADD_KEY, "$CSS_BUTTONS_FILE", button_css->data);
+
+    Map *headers = create_map();
+    headers->Utils(headers, __ADD_KEY, "Content-Type", "text/html; charset=UTF-8");
+    headers->Utils(headers, __ADD_KEY, "Connection", "close");
+
+    SendResponse(s, request_socket, OK, headers, "pages/login.html", vars);
+    free(css);
+    free(vars);
+    free(headers);
+    free(button_css);
+}
+
 int main() {
     HTTPServer *s = StartWebServer(NULL, 80, 0);
     Add404Page(s, "404.html");
@@ -142,6 +163,7 @@ int main() {
     AddRoute(s, "/post", test_page);
     AddRoute(s, "/get", get_page);
     AddRoute(s, "/test", live_action_test_page);
+    AddRoute(s, "/login", login_page);
 
     StartListener(s);
     return 0;

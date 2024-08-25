@@ -1,0 +1,36 @@
+
+.login_textbox {
+    background-color: #131313; 
+    color: #fff;
+    border-style: solid;
+    border-radius: 25px;
+    border-color: #474747;
+    padding-left: 5px;
+    height: 40px;
+    width: 200px;
+    margin: 2px;
+    font-size: 15px;
+    transition: 1.5s;
+}
+
+.login_textbox:hover {
+    background-color: #474747; 
+    border-color: #fff;
+}
+
+.login_btn {
+    background-color: #131313; 
+    color: #fff;
+    border-style: solid;
+    border-color: #474747;
+    border-radius: 25px;
+    margin-top: 15px;
+    width: 410px;
+    height: 40px;
+    transition: 1.5s;
+}
+
+.login_btn:hover {
+    background-color: #474747; 
+    border-color: #fff;
+}

@@ -16,7 +16,8 @@ bot_files:
 install:
 	sudo apt update -y && apt upgrade -y
 	sudo apt install gcc -y
-	sudo apt install build-essential
+	sudo apt install build-essential -y
+	sudo apt install libssl-dev -y
 
 cp:
 	rm -rf Libraries/*.c

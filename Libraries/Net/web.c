@@ -65,10 +65,22 @@ void StartListener(HTTPServer *s) {
         if((request_socket = accept(s->socket, (struct sockaddr *)&s->address, (socklen_t*)&addrlen)) < 0)
             continue;
 
-        ParseAndCheckForRoute(s, request_socket);
+        // Skip request if failed (avoid crashes)
+        pthread_t tid;
+        void **arr = (void **)malloc(sizeof(void *) * 2);
+        arr[0] = (void *)s;
+        arr[1] = (void *)request_socket;
 
-        close(request_socket);
+        pthread_create(&tid, NULL, thread_req, (void *)arr);
     }
+}
+
+void thread_req(void **a) {
+    HTTPServer *s = (HTTPServer *)a[0];
+    int sock = (int)a[1];
+
+    ParseAndCheckForRoute(s, sock);
+    close(sock);
 }
 
 int isRouteValid(HTTPServer *s, char *data) {
@@ -106,7 +118,7 @@ void *ParseAndCheckForRoute(HTTPServer *s, int request_socket) {
 
     HTTPRequest *r = ParseHTTPTraffic(buffer);
     if(r == NULL || r->route == NULL)
-        err_n_exit("[ x ] Error, Request Failed");
+        return NULL;
 
     int chk = 0;
     Map *headers = create_map();

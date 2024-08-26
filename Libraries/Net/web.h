@@ -67,6 +67,11 @@ int                     isRouteValid(HTTPServer *s, char *data);
 void                    *ParseAndCheckForRoute(HTTPServer *s, int request_socket);
 
 //
+//
+//
+void thread_req(void **a);
+
+//
 //                      Get post queries
 //
 Map                    *get_post_queries(HTTPServer *s, HTTPRequest *r);

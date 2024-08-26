@@ -67,9 +67,9 @@ int                     isRouteValid(HTTPServer *s, char *data);
 void                    *ParseAndCheckForRoute(HTTPServer *s, int request_socket);
 
 //
+//                      Function to thread the request handler
 //
-//
-void thread_req(void **a);
+void                    *thread_req(void **a);
 
 //
 //                      Get post queries
@@ -95,6 +95,11 @@ void                    SendResponse(HTTPServer *s, int request_socket,StatusCod
 //
 //
 void                    SendRawResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *headers, const char *raww, Map *vars);
+
+//
+//                      Parse 'include_css()' and 'include_html()' function in HTML files
+//
+char                    *parse_include_line(str *line, int line_num);
 
 //
 //                      Close The Server and Clean the HTTPServer struct

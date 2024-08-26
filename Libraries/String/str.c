@@ -99,7 +99,7 @@ long __CountChar(str *s, const char ch) {
 
 // only find the first matched char and return position
 long findchar(str *s, const char ch) {
-    return findchar_at_count(s, ch, 1);
+    return findchar_at_count(s, ch, 0);
 }
 
 // If a char is found the number of count provided, it will return the position of the char in string

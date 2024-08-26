@@ -27,6 +27,10 @@ HTTPServer *StartWebServer(const char *ip, int port, int auto_search_dir) {
     s->address.sin_addr.s_addr = INADDR_ANY;
     s->address.sin_port = htons(port);
 
+    int reuse = 1;
+    if(setsockopt(s->socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) < 0)
+        err_n_exit("setsockopt(SO_REUSEADDR) failed");
+
     if (bind(s->socket, (struct sockaddr *)&s->address, sizeof(s->address)) < 0)
         err_n_exit("[ x ] Error, Unable to bind socket");
 
@@ -75,7 +79,7 @@ void StartListener(HTTPServer *s) {
     }
 }
 
-void thread_req(void **a) {
+void *thread_req(void **a) {
     HTTPServer *s = (HTTPServer *)a[0];
     int sock = (int)a[1];
 
@@ -289,6 +293,7 @@ void SendResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *hea
                 if((Key *)vars->keys[i] == NULL)
                     break;
 
+                // Variable Replacing
                 if(strstr(raw_html_data->data, (char *)((Key *)vars->keys[i])->name))
                     raw_html_data->ReplaceString(raw_html_data, (char *)((Key *)vars->keys[i])->name, (char *)((Key *)vars->keys[i])->value);
             }
@@ -315,9 +320,10 @@ void SendResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *hea
 }
 
 
-void SendRawResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *headers, const char *raww, Map *vars) { 
+void SendRawResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *headers, const char *html_file, Map *vars) { 
     str *req_data = string("HTTP/1.1 200 OK\r\n");
 
+    /* Add Headers */
     if(headers != NULL) {
         for(int i = 0; i < headers->idx; i++) {
             req_data->AppendString(req_data, (char *)((Key *)headers->keys[i])->name);
@@ -326,31 +332,107 @@ void SendRawResponse(HTTPServer *s, int request_socket, StatusCode_T code, Map *
             req_data->AppendString(req_data, "\r\n");
         }
     }
+    req_data->AppendString(req_data, "\r\n");
 
-    str *file = string(raww);
-    if(vars != NULL) {
-        str *raw_html_data = string(file->data);
+    if(html_file == NULL) {
+        write(request_socket, req_data->data, strlen(req_data->data));
+        free(req_data);
+        return;
+    }
 
-        for(int i = 0; i < vars->idx; i++) {
-            if((Key *)vars->keys[i] == NULL)
+    // Open file and check for errs
+    cFile *html = Openfile(html_file);
+    if(!html->fd) {
+        printf("[ x ] Unable to find HTML File.... %s\n", html_file);
+        write(request_socket, req_data->data, strlen(req_data->data));
+        free(req_data);
+        free(html);
+        return;
+    }
+
+    // Read file and parse for functions or append the one line file
+    html->Read(html);
+    str *raw_html = string(html->data);
+    if(raw_html->CountChar(raw_html, '\n') > 0) {
+        Arr *a = Array(raw_html->Split(raw_html, "\n"));
+        for(int i = 0; i < a->idx - 1; i++) {
+            if(a->arr[i] == NULL)
                 break;
 
-            if(strstr(raw_html_data->data, (char *)((Key *)vars->keys[i])->name))
-                raw_html_data->ReplaceString(raw_html_data, (char *)((Key *)vars->keys[i])->name, (char *)((Key *)vars->keys[i])->value);
+            // parse include_css() and include_html() lines
+            str *line = string(a->arr[i]);
+            if(strstr(line->data, "include_css(") || strstr(line->data, "include_html(")) {
+                req_data->AppendString(req_data, parse_include_line(line, i));
+                req_data->AppendString(req_data, "\r\n");
+                continue;
+            }
+            
+            req_data->AppendString(req_data, line->data);
+            req_data->AppendString(req_data, "\r\n");
         }
+    } else {
+        req_data->AppendString(req_data, raw_html->data);
+    }
 
-        req_data->AppendString(req_data, raw_html_data->data);
+    // Check for if no var is provided
+    if(vars == NULL) {
         write(request_socket, req_data->data, strlen(req_data->data));
-
-        free(raw_html_data);
-        free(req_data); 
-
-        free(file);
+        free(req_data);
+        free(html);
         return;
     }
 
     write(request_socket, req_data->data, strlen(req_data->data));
-    free(req_data); 
+    free(req_data);
+}
+
+char *parse_include_line(str *line, int line_num) {
+    str *file_data = string(NULL);
+
+    // Check end of line syntax
+    line->Strip(line);
+    if(!(long)line->EndsWith(line, ");")) {
+        printf("[ x ] Error, Invalid syntax. Missing ';' at the end of line %d\n", line_num);
+        return NULL;
+    }
+
+    // Check for ( position and get substr
+    int ch = line->FindCharAt(line, '(', 1);
+    str *raw_args = string(line->GetSubstr(line, ch, line->idx));
+
+    // Detect quotes to remove
+    int quote_count = raw_args->CountChar(raw_args, '"');
+    if(quote_count > 0) {
+        for(int i = 0; i < quote_count; i++)
+            raw_args->ReplaceChar(raw_args, '"', ' ');
+    }
+    char RmChars[] = {'(', ')', ';'};
+    for(int i = 0; i < 3; i++)
+        raw_args->ReplaceChar(raw_args, RmChars[i], ' ');
+    raw_args->Strip(raw_args);
+
+    // Check for multiple arguments and add file data
+    if(strstr(raw_args->data, ",")) {
+        Arr *args = Array(raw_args->Split(raw_args, ","));
+        for(int i = 0; i < args->idx; i++) {
+            // open files and append
+            str *file_name = string(args->arr[i]);
+            file_name->Strip(file_name);
+            cFile *current_file = Openfile(file_name->data);
+            current_file->Read(current_file);
+            file_data->AppendString(file_data, current_file->data);
+            free(current_file);
+            free(file_name);
+        }
+    } else {
+        cFile *file = Openfile(raw_args->data);
+        file->Read(file);
+        file_data->AppendString(file_data, file->data);
+        free(file);
+
+    }
+
+    return file_data->data;
 }
 
 int CloseServer(HTTPServer *s) {

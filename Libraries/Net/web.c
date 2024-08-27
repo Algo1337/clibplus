@@ -27,7 +27,7 @@ HTTPServer *StartWebServer(const char *ip, int port, int auto_search_dir) {
     // s->address.sin_addr.s_addr = INADDR_ANY;
     s->address.sin_port = htons(port);
 
-    if(inet_pton(AF_INET, ip, &s->address.sin_addr) <= 0)
+    if(inet_aton(ip, &s->address.sin_addr) <= 0)
         err_n_exit("[ x ] Error, Unable to convert IP address to binary...!");
 
     int reuse = 1;

@@ -21,7 +21,7 @@ HTTPClientResponse *RequestURL(const char *url, Map *headers, Request_T type) {
     http->url_route = strdup(path);
     http->headers = headers;
 
-    const char *port = (strstr("url", "https://") ? "443" : "80");
+    const char *port = (strstr(url, "https://") ? "443" : "80");
     http->serverfd = Create_HTTP_Socket(http, port);
 
     HTTPClientResponse *r;
@@ -34,21 +34,24 @@ HTTPClientResponse *RequestURL(const char *url, Map *headers, Request_T type) {
 
         if (SSL_connect(http->ssl) <= 0)
             return NULL;
-
-        printf("Connected with %s encryption\n", SSL_get_cipher(http->ssl));
+            
         switch(type) {
-            case __GET: { __Send_HTTP_GET_Request(http); }
+            case __GET: { 
+                __Send_HTTP_GET_Request(http, 1); 
+                r = __Parse_HTTP_Response(http, 1);
+                r = parse_raw_traffic(r->body->data);
+                break;
+            }
             // case __POST: { }
             default: {
                 printf("ERROR");
                 return NULL;
             }
         }
-        
-        r = __Parse_HTTP_Response(http);
-        r = parse_raw_traffic(r->body->data);
     } else {
-        write(http->serverfd, "GET / HTTP/1.1\r\nHost: %s\r\n\r\n", strlen("GET / HTTP/1.1\r\nHost: %s\r\n\r\n"));
+        __Send_HTTP_GET_Request(http, 0); 
+        r = __Parse_HTTP_Response(http, 0);
+        r = parse_raw_traffic(r->body->data);
     }
 
     if (strstr(url, "https://")) {
@@ -154,7 +157,7 @@ int Create_HTTP_Socket(HTTPClient *http, const char *port) {
     return sockfd;
 }
 
-void __Send_HTTP_GET_Request(HTTPClient *http) {
+void __Send_HTTP_GET_Request(HTTPClient *http, int ssl) {
     char *start_of_req[] = {"GET ", http->url_route, " HTTP/1.1\r\n", "Host: ", http->hostname, "\r\n"};
     str *req_data = string(NULL);
 
@@ -173,21 +176,31 @@ void __Send_HTTP_GET_Request(HTTPClient *http) {
 
     req_data->AppendString(req_data, "Connection: close\r\n\r\n");
 
-    SSL_write(http->ssl, req_data->data, strlen(req_data->data));
+    if(ssl == 1)
+        SSL_write(http->ssl, req_data->data, strlen(req_data->data));
+    else
+        write(http->serverfd, req_data->data, strlen(req_data->data));
+
     free(req_data);
 }
 
-HTTPClientResponse *__Parse_HTTP_Response(HTTPClient *http) {
+HTTPClientResponse *__Parse_HTTP_Response(HTTPClient *http, int ssl) {
     HTTPClientResponse *r = (HTTPClientResponse *)malloc(sizeof(HTTPClientResponse));
     char buffer[4096];
     int bytes;
 
     r->body = string(NULL);
 
-    while ((bytes = SSL_read(http->ssl, buffer, sizeof(buffer) - 1)) > 0) {
-        buffer[bytes] = '\0';
-        r->body->AppendString(r->body, (const char *)&buffer);
+    if(ssl == 1) {
+        while ((bytes = SSL_read(http->ssl, buffer, sizeof(buffer) - 1)) > 0) {
+            buffer[bytes] = '\0';
+            r->body->AppendString(r->body, (const char *)&buffer);
+            memset(buffer, '\0', 4096);
+        }
+    } else {
         memset(buffer, '\0', 4096);
+        read(http->serverfd, buffer, 4095);
+        r->body->AppendString(r->body, (const char *)&buffer);
     }
 
     r->full_route = string(http->url_route); // TODO: Parse to get the last element splitting delim: /

@@ -137,12 +137,12 @@ int                     Create_HTTP_Socket(HTTPClient *http, const char *port);
 //
 //                      Construct an HTTP Request Syntax to Send
 //
-void                    __Send_HTTP_GET_Request(HTTPClient *http);
+void                    __Send_HTTP_GET_Request(HTTPClient *http, int ssl);
 
 //
 //                      Parse the request's response
 //
-HTTPClientResponse      *__Parse_HTTP_Response(HTTPClient *http);
+HTTPClientResponse      *__Parse_HTTP_Response(HTTPClient *http, int ssl);
 
 //
 //

@@ -24,11 +24,8 @@ void    init_openssl();
 void    cleanup_openssl();
 
 //
+//
+//
 SSL_CTX *create_ssl_context();
-
-//
-//      SSL Handshake
-//
-void verify_certificate(SSL *ssl);
 
 #endif

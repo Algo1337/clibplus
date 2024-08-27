@@ -16,32 +16,26 @@ HTTPClientResponse *RequestURL(const char *url, Map *headers, Request_T type) {
     const char *hostname = hostname_info->arr[0];
     const char *path = hostname_info->arr[1];
 
-    printf("%s => %s\n", hostname, path);
     HTTPClient *http = (HTTPClient *)malloc(sizeof(HTTPClient));
     http->hostname = strdup(hostname);
     http->url_route = strdup(path);
     http->headers = headers;
 
-    init_openssl();
-    http->ctx = create_ssl_context();
-    if(http->ctx == NULL)
-        err_n_exit("[ + ] Error, OpenSSL IS SHIT\n");
+    const char *port = (strstr("url", "https://") ? "443" : "80");
+    http->serverfd = Create_HTTP_Socket(http, port);
 
-    int sockfd = Create_HTTP_Socket(http, "443");
-    if(sockfd < 0)
-        err_n_exit("[ HTTPClient ] Failed to create http request!");
-
-    http->ssl = SSL_new(http->ctx);
-    SSL_set_fd(http->ssl, sockfd);
-
-    // Establish an SSL connection
     HTTPClientResponse *r;
-    if (SSL_connect(http->ssl) <= 0) {
-        ERR_print_errors_fp(stderr);
-    } else {
-        printf("Connected with %s encryption\n", SSL_get_cipher(http->ssl));
-        verify_certificate(http->ssl);
+    if(strstr(url, "https://")) {
+        init_openssl();
+        http->ctx = create_ssl_context();
 
+        http->ssl = SSL_new(http->ctx);
+        SSL_set_fd(http->ssl, http->serverfd);
+
+        if (SSL_connect(http->ssl) <= 0)
+            return NULL;
+
+        printf("Connected with %s encryption\n", SSL_get_cipher(http->ssl));
         switch(type) {
             case __GET: { __Send_HTTP_GET_Request(http); }
             // case __POST: { }
@@ -53,14 +47,17 @@ HTTPClientResponse *RequestURL(const char *url, Map *headers, Request_T type) {
         
         r = __Parse_HTTP_Response(http);
         r = parse_raw_traffic(r->body->data);
+    } else {
+        write(http->serverfd, "GET / HTTP/1.1\r\nHost: %s\r\n\r\n", strlen("GET / HTTP/1.1\r\nHost: %s\r\n\r\n"));
     }
 
-    SSL_shutdown(http->ssl);
-    SSL_free(http->ssl);
-    close(sockfd);
-    SSL_CTX_free(http->ctx);
-    cleanup_openssl();
+    if (strstr(url, "https://")) {
+        SSL_free(http->ssl);
+        SSL_CTX_free(http->ctx);
+        cleanup_openssl();
+    }
 
+    close(http->serverfd);
     return r;
 }
 

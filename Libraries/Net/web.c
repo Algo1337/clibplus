@@ -24,8 +24,11 @@ HTTPServer *StartWebServer(const char *ip, int port, int auto_search_dir) {
         err_n_exit("[ x ] Error, Unable to create socket");
 
     s->address.sin_family = AF_INET;
-    s->address.sin_addr.s_addr = INADDR_ANY;
+    // s->address.sin_addr.s_addr = INADDR_ANY;
     s->address.sin_port = htons(port);
+
+    if(inet_pton(AF_INET, ip, &s->address.sin_addr) <= 0)
+        err_n_exit("[ x ] Error, Unable to convert IP address to binary...!");
 
     int reuse = 1;
     if(setsockopt(s->socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) < 0)
@@ -75,7 +78,7 @@ void StartListener(HTTPServer *s) {
         arr[0] = (void *)s;
         arr[1] = (void *)request_socket;
 
-        pthread_create(&tid, NULL, thread_req, (void *)arr);
+        pthread_create(&tid, NULL, (void *)thread_req, (void *)arr);
     }
 }
 

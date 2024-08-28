@@ -24,10 +24,14 @@ HTTPServer *StartWebServer(const char *ip, int port, int auto_search_dir) {
         err_n_exit("[ x ] Error, Unable to create socket");
 
     s->address.sin_family = AF_INET;
-    s->address.sin_addr.s_addr = // INADDR_ANY;
     s->address.sin_port = htons(port);
 
-    inet_aton(ip, &s->address.sin_addr);
+    if(ip == NULL) {
+        s->address.sin_addr.s_addr = INADDR_ANY;
+    } else {
+        inet_aton(ip, &s->address.sin_addr);
+    }
+
     int reuse = 1;
     if(setsockopt(s->socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) < 0)
         err_n_exit("setsockopt(SO_REUSEADDR) failed");
@@ -141,10 +145,10 @@ void *ParseAndCheckForRoute(HTTPServer *s, int request_socket) {
         }
         
         if(s->err_404_filepath != NULL)
-            SendResponse(s, request_socket, OK, headers, s->err_404_filepath, NULL);
+            SendRawResponse(s, request_socket, OK, headers, s->err_404_filepath, NULL);
     } else {
         if(s->err_404_filepath != NULL)
-            SendResponse(s, request_socket, OK, headers, s->err_404_filepath, NULL);
+            SendRawResponse(s, request_socket, OK, headers, s->err_404_filepath, NULL);
     }
 }
 

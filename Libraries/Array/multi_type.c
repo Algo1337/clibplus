@@ -19,14 +19,12 @@ uArray *__appendelement(uArray *a, int sz, void *data) {
         if(CARRAY == NULL)
         return CARRAY;
 
-        CARRAY->arr[CARRAY->idx] = (void *)malloc(sz);
         CARRAY->arr[CARRAY->idx] = data;
         CARRAY->idx++;
         CARRAY->arr = (void **)realloc(CARRAY->arr, sizeof(void *) * CARRAY->idx + 1);
         return CARRAY;
     }
 
-    a->arr[a->idx] = (void *)malloc(sz);
     a->arr[a->idx] = data;
     a->idx++;
     a->arr = (void **)realloc(a->arr, sizeof(void *) * a->idx + 1);

@@ -21,7 +21,6 @@ Arr *Array(char **c_arr) {
             if(c_arr[i] == NULL)
                 break;
                 
-            
             a->arr[i] = strdup(c_arr[i]);
             a->idx++;
         }
@@ -177,9 +176,11 @@ char *__get(Arr *a, int idx) {
 }
 
 long __in_array(Arr *a, char *data) {
-    for(int i = 0; i < a->idx; i++)
-        if(!strcmp(a->arr[i], data))
+    for(int i = 0; i < a->idx; i++) {
+        if(!strcmp(a->arr[i], data)) {
             return 1;
+        }
+    }
 
     return 0;
 }

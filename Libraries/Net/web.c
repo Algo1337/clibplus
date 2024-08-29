@@ -112,7 +112,12 @@ int isRouteValid(HTTPServer *s, char *data) {
 
         if(!strcmp((char *)((Key *)s->routes->keys[i])->name, route->data))
             return i;
-        
+    }
+
+    for(int i = 0; i < s->routes->idx; i++) {
+        if((Key *)s->routes->keys[i] == NULL)
+            break;
+            
         if( (long)route->StartsWith(route, (char *)((Key *)s->routes->keys[i])->name) )
             return i;
     }

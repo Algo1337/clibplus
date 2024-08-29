@@ -14,6 +14,17 @@ uArray *new_array(void) {
     return a;
 }
 
+uArray *__appendelement(uArray *a, int sz, void *data) {
+    if(a == NULL)
+        return NULL;
+
+    a->arr[a->idx] = (void *)malloc(sz);
+    a->arr[a->idx] = data;
+    a->idx++;
+    a->arr = (void **)realloc(a->arr, sizeof(void *) * a->idx + 1);
+    return a;
+}
+
 uArray *__appendelement(int sz, void *data) {
     if(CARRAY == NULL)
         return CARRAY;

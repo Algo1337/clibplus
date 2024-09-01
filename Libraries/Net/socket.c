@@ -71,14 +71,15 @@ str *Read(Socket *s) {
     str *resp = string(NULL);
     char buffer[1024];
     int bytesRead = 0;
+    
+    read(s->SockFD, buffer, sizeof(buffer) - 1);
+    // while((bytesRead = read(s->SockFD, buffer, sizeof(buffer) - 1)) > 0) {
+    //     if(resp->idx >= READ_MAX_BUFFER)
+    //         break;
 
-    while((bytesRead = read(s->SockFD, buffer, sizeof(buffer) - 1)) > 0) {
-        if(resp->idx >= READ_MAX_BUFFER)
-            break;
-
-        resp->AppendString(resp, buffer);
-        memset(buffer, 0, sizeof(buffer));
-    }
+    //     resp->AppendString(resp, buffer);
+    //     memset(buffer, 0, sizeof(buffer));
+    // }
 
     return resp;
 }

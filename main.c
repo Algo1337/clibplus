@@ -9,10 +9,10 @@ void handle_conn(void *c) {
     Socket *client = (Socket *)c;
     while(1) { 
         str *r = Read(client);
-
+        printf("%s\n", r->data);
         if(strstr(r->data, "test")) {
             printf("WORKING\n");
-            Write(client, string("WORKING\n"));
+            Write(client, string("WORKING\r\n"));
         }
 
         free(r);

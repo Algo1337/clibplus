@@ -11,7 +11,7 @@ void handle_conn(void *c) {
         str *r = Read(client);
         printf("%s\n", r->data);
         if(strstr(r->data, "test")) {
-            printf("WORKING\n");
+            printf("\x1b[32mWORKING\x1b[0m\n");
             Write(client, string("WORKING\r\n"));
         }
 

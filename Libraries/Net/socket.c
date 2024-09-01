@@ -73,6 +73,7 @@ str *Read(Socket *s) {
     int bytesRead = 0;
     
     read(s->SockFD, buffer, sizeof(buffer) - 1);
+    resp = string(buffer);
     // while((bytesRead = read(s->SockFD, buffer, sizeof(buffer) - 1)) > 0) {
     //     if(resp->idx >= READ_MAX_BUFFER)
     //         break;

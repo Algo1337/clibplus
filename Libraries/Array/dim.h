@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef DIM_H
+#define DIM_H
 
 //
 // DimArrayElement

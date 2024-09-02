@@ -20,6 +20,10 @@ Socket *CreateSocket(SocketHostname_T host_t, int type, str *host, int port) {
         inet_aton(host->data, &s->SockAddr.sin_addr);
     }
 
+    int reuse = 1;
+    if(setsockopt(s->SockFD, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) < 0)
+        err_n_exit("setsockopt(SO_REUSEADDR) failed");
+
     s->SockAddr.sin_port = htons(port); 
     s->Port = port;
    

@@ -24,12 +24,39 @@ typedef struct Socket {
 
 static int READ_MAX_BUFFER = 1024;
 
-Socket *CreateSocket(SocketHostname_T host_t, int type, str *host, int port);
-int Listen(Socket *s, int concurrent);
-Socket *Accept(Socket *s);
-void set_read_max_buffer_sz(int sz);
-str *Read(Socket *s);
-int Write(Socket *s, str *data);
-int Close(Socket *s);
+//
+//          Create an instance Socket
+//
+Socket      *CreateSocket(SocketHostname_T host_t, int type, str *host, int port);
+
+//
+//          Listening Concurrent 
+//
+int         Listen(Socket *s, int concurrent);
+
+//
+//          Accpet Question, returning socket info
+//
+Socket      *Accept(Socket *s);
+
+//
+//          
+//
+void        set_read_max_buffer_sz(int sz);
+
+//
+//
+//
+str         *Read(Socket *s);
+
+//
+//
+//
+int         Write(Socket *s, str *data);
+
+//
+//
+//
+int         Close(Socket *s);
 
 #endif

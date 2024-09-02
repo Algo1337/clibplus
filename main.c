@@ -13,12 +13,8 @@ void handle_conn(void *c) {
 
         printf("%s\n", r->data);
 
-        if(strstr(r->data, "test")) {
-            printf("\x1b[32mWORKING\x1b[0m\n");
-            Write(client, string("WORKING\r\n"));
-        } else if(strstr(r->data, "methods")) {
-            printf("\x1b[32mWORKING\x1b[0m\n");
-            Write(client, "", "");
+        if(strstr(r->data, "help") || strstr(r->data, "?")) {
+            Write(client, string("HELP LIST\r\n"));
         }
 
         free(r);

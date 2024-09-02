@@ -17,7 +17,7 @@ uArray *new_array(void) {
 uArray *__appendelement(uArray *a, int sz, void *data) {
     if(a == NULL) {
         if(CARRAY == NULL)
-        return CARRAY;
+            return CARRAY;
 
         CARRAY->arr[CARRAY->idx] = data;
         CARRAY->idx++;

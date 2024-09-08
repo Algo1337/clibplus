@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <assert.h>
 
 #include "socket.h"
 
@@ -78,13 +80,6 @@ str *Read(Socket *s) {
     
     read(s->SockFD, buffer, sizeof(buffer) - 1);
     resp = string(buffer);
-    // while((bytesRead = read(s->SockFD, buffer, sizeof(buffer) - 1)) > 0) {
-    //     if(resp->idx >= READ_MAX_BUFFER)
-    //         break;
-
-    //     resp->AppendString(resp, buffer);
-    //     memset(buffer, 0, sizeof(buffer));
-    // }
 
     return resp;
 }
@@ -96,7 +91,20 @@ int Write(Socket *s, str *data) {
     if(s->SockFD < 1)
         return -1;
 
-    write(s->SockFD, data->data, strlen(data->data)); 
+    // int bytes_written = write(s->SockFD, data->data, strlen(data->data));
+    ssize_t bytes_sent = send(s->SockFD, data->data, strlen(data->data), MSG_NOSIGNAL);
+    if (bytes_sent == -1) {
+        if (errno == EPIPE || errno == ECONNRESET) {
+            // Handle the disconnection
+            close(s->SockFD);
+            pthread_exit(NULL);
+        } else {
+            // Handle other errors
+            perror("send failed");
+            pthread_exit(NULL);
+        }
+    }
+
     return 1;
 }
 

@@ -23,6 +23,17 @@ cFile *Openfile(const char *filepath) {
     return f;
 }
 
+cFile *CreateFile(const str *filename, const str *output) {
+    FILE *fd = fopen(filename->data, "w");
+    if(!fd)
+        return NULL;
+
+    fwrite(output->data, sizeof(char), strlen(output->data), fd);
+    fclose(fd);
+
+    return Openfile(filename->data);
+}
+
 char *__readContext(cFile *f) {
     f->data_length = (long)__get_content_length(f) + 1;
     f->data = (char *)malloc(f->data_length);

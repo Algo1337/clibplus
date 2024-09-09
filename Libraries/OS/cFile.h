@@ -7,21 +7,29 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <clib/String/str.h>
+
 typedef struct cFile {
-    char    *path;
-    FILE    *fd;
-    char    *data;
-    long    data_length;
+    char            *path;
+    FILE            *fd;
+    char            *data;
+    long            data_length;
     
-    char *  (*Read)     (struct cFile *f);                      // Get file content
-    int     (*Write)    (struct cFile *f, const char *data);    // Write To File
-    void *  (*Close)    (struct cFile *f);
+    struct cFile    (*Createfile)   (const str *filename, const str *output);
+    char *          (*Read)         (struct cFile *f);                      // Get file content
+    int             (*Write)        (struct cFile *f, const char *data);    // Write To File
+    void *          (*Close)        (struct cFile *f);
 } cFile;
 
 //
 //      Open a file
 //
 cFile   *Openfile(const char *filepath);
+
+//
+//      Create a new file and return a new instance of cFile
+//
+cFile   *CreateFile(const str *filename, const str *output);
 
 //
 //      Get file content

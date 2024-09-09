@@ -427,11 +427,13 @@ long __ReplaceCharWithStr(str *s, const char ch, const char *r) {
 }
 
 char *replace_string(str *s, const char *find, const char *replace) {
-
     char *new = (char *)alloc(s->idx + strlen(replace) + 1);
     int string_at = __findSubstr(s, find);
     int i = 0;
     while(i < s->idx) {
+        if(s->data[i] == NULL)
+            break;
+
         if(i >= string_at && i < (string_at + strlen(find))) {
             strncat(new, replace, strlen(replace));
             i += strlen(find);

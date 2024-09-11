@@ -25,9 +25,19 @@ typedef struct Socket {
 static int READ_MAX_BUFFER = 1024;
 
 //
-//          Create an instance Socket
+//          Create a new instance of ExDos with a new socket
 //
 Socket      *CreateSocket(SocketHostname_T host_t, int type, str *host, int port);
+
+//
+//          Bind a socket
+//
+Socket      *CreateSocketAndBind(Socket *s);
+
+//
+//          Connect to a Server
+//
+int         Connect(Socket *s);
 
 //
 //          Listening Concurrent 
@@ -40,7 +50,12 @@ int         Listen(Socket *s, int concurrent);
 Socket      *Accept(Socket *s);
 
 //
-//          
+//          Set a socket timeout
+//
+int         set_socket_timeout(Socket *s, int timeout_len);
+
+//
+//          Set a MAX buffer size (To avoid crashes)
 //
 void        set_read_max_buffer_sz(int sz);
 
@@ -53,6 +68,11 @@ str         *Read(Socket *s);
 //
 //
 int         Write(Socket *s, str *data);
+
+//
+//
+//
+void        GetClientIP(Socket *s);
 
 //
 //

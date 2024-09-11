@@ -23,7 +23,9 @@
         "xtree": "c",
         "stdarg.h": "c",
         "ctype.h": "c",
-        "request.h": "c"
+        "request.h": "c",
+        "tuple": "c",
+        "utility": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

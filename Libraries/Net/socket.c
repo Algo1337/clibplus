@@ -28,11 +28,19 @@ Socket *CreateSocket(SocketHostname_T host_t, int type, str *host, int port) {
 
     s->SockAddr.sin_port = htons(port); 
     s->Port = port;
-   
+
+    return s;
+}
+
+Socket *CreateSocketAndBind(Socket *s) {
     if ((bind(s->SockFD, (struct sockaddr *)&s->SockAddr, sizeof(s->SockAddr))) != 0)
         return NULL;
    
     return s;
+}
+
+int Connect(Socket *s) {
+    return connect(s->SockFD, (struct sockaddr *)&s->SockAddr, (socklen_t)sizeof(s->SockAddr));
 }
 
 int Listen(Socket *s, int concurrent) {
@@ -61,6 +69,18 @@ Socket *Accept(Socket *s) {
     client_socket->SockFD = accept(s->SockFD, (struct sockaddr *)&client_socket->SockAddr, &len);
 
     return client_socket;
+}
+
+int set_socket_timeout(Socket *s, int timeout_len) {
+    struct timeval timeout = {
+        .tv_sec     = timeout_len,
+        .tv_usec    = timeout_len
+    };
+
+    if(setsockopt(s->SockFD, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 1)
+        return 1;
+    
+    return 0;
 }
 
 void set_read_max_buffer_sz(int sz) {
@@ -106,6 +126,17 @@ int Write(Socket *s, str *data) {
     }
 
     return 1;
+}
+
+void GetClientIP(Socket *s) {
+    socklen_t addr_sz = sizeof(s->SockAddr);
+    if(getpeername(s->SockFD, (struct sockaddr *)&s->SockAddr, &addr_sz)) 
+        return;
+
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(s->SockAddr.sin_addr), ip, INET_ADDRSTRLEN);
+    s->IP = string(ip);
+    s->Port = ntohs(s->SockAddr.sin_port);
 }
 
 int Close(Socket *s) {

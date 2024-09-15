@@ -98,7 +98,11 @@ str *Read(Socket *s) {
     char buffer[1024];
     int bytesRead = 0;
     
-    read(s->SockFD, buffer, sizeof(buffer) - 1);
+    int chk = read(s->SockFD, buffer, sizeof(buffer) - 1);
+    if(chk == 0 || chk == -1) {
+        return NULL;
+    }
+
     resp = string(buffer);
 
     return resp;
@@ -115,13 +119,7 @@ int Write(Socket *s, str *data) {
     ssize_t bytes_sent = send(s->SockFD, data->data, strlen(data->data), MSG_NOSIGNAL);
     if (bytes_sent == -1) {
         if (errno == EPIPE || errno == ECONNRESET) {
-            // Handle the disconnection
-            close(s->SockFD);
-            pthread_exit(NULL);
-        } else {
-            // Handle other errors
-            perror("send failed");
-            pthread_exit(NULL);
+            return NULL;
         }
     }
 

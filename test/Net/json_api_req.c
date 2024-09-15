@@ -15,7 +15,7 @@
 *
 */
 int main(int argc, char *argv[]) {
-    HTTPClientResponse *r = RequestURL(argv[1], NULL, __GET);
+    HTTPClientResponse *r = RequestURL("ipwho.is/70.70.70.72", NULL, __GET);
 
     // Check Status Code && Display Headers If Valid Or Print Status Code Error
     if(r->status_code == OK) {

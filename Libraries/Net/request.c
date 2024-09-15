@@ -100,7 +100,6 @@ Arr *parse_url(const char *data) {
         args->Utils(args, __APPEND, path->data);
 
 
-        printf("%s => %s\n", args->arr[0], args->arr[1]);
         free(hostname);
         free(path);
         free(url);
@@ -120,12 +119,9 @@ Arr *parse_url(const char *data) {
         hostname->ReplaceString(hostname, "/", "");
     
     
-    printf("%s\n", hostname->data);
     args = Array(NULL);
     args->Utils(args, __APPEND, hostname->data);
     args->Utils(args, __APPEND, "/");
-
-    printf("%s => %s\n", args->arr[0], args->arr[1]);
 
     free(hostname);
     free(path);

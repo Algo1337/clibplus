@@ -16,30 +16,12 @@ int main(int argc, char *argv[]) {
     if(argc != 2)
         err_n_exit("[ + ] Error, Invalid argument..!");
 
-    str *ip = string("/?q=");
+    str *ip = string("https://api.ipapi.is/?q=");
     ip->AppendString(ip, argv[1]);
 
-    str *gg = string(argv[1]);
-    int t = validate_ipv4(gg);
-    if(!t)
-        err_n_exit("[ + ] Error, Invalid IP Provided...!");
-
-    HTTPClientResponse *r = RequestURL("api.ipapi.is", ip->data);
-    char **lines = r->body->Split(r->body, "\n");
-    int line_count = count_arr(lines);
-    
-    str *new = string(NULL);
-    Map *json;
-    if(line_count > 1) {
-        for(int i = 10; i < line_count; i++) {
-            new->AppendString(new, lines[i]);
-            if(i != line_count-1)
-                new->AppendString(new, "\n");
-        }
-        json = decode_json(new->data);
-    } else {
-        json = decode_oneline_json(lines[10]);
-    }
+    HTTPClientResponse *r = RequestURL(ip->data, NULL, __GET);
+    printf("%d\n", r->status_code);
+    Map *json = decode_json(r->body->data);
 
     for(int i = 0; json->idx; i++) {
         if(json->keys[i] == NULL)

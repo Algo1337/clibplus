@@ -6,7 +6,7 @@
 
 uArray *new_array(void) {
     uArray *a = (uArray *)malloc(sizeof(uArray));
-    a->arr = (void **)malloc(sizeof(void *) + 1);
+    a->arr = (void **)malloc(sizeof(void *) * 1);
 
     a->Append = __appendelement;
     CARRAY = a;

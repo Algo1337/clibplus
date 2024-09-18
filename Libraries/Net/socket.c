@@ -93,9 +93,8 @@ str *Read(Socket *s) {
 
     if(s->SockFD < 1)
         return NULL;
-
-    str *resp = string(NULL);
-    char buffer[1024];
+        
+    char buffer[1024] = {0};
     int bytesRead = 0;
     
     int chk = read(s->SockFD, buffer, sizeof(buffer) - 1);
@@ -103,9 +102,7 @@ str *Read(Socket *s) {
         return NULL;
     }
 
-    resp = string(buffer);
-
-    return resp;
+    return string(buffer);
 }
 
 int Write(Socket *s, str *data) {

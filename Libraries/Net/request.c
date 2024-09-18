@@ -182,7 +182,7 @@ void __Send_HTTP_GET_Request(HTTPClient *http, int ssl) {
 
 HTTPClientResponse *__Parse_HTTP_Response(HTTPClient *http, int ssl) {
     HTTPClientResponse *r = (HTTPClientResponse *)malloc(sizeof(HTTPClientResponse));
-    char buffer[4096];
+    char buffer[4096] = {0};
     int bytes;
 
     r->body = string(NULL);
@@ -195,7 +195,7 @@ HTTPClientResponse *__Parse_HTTP_Response(HTTPClient *http, int ssl) {
         }
     } else {
         memset(buffer, '\0', 4096);
-        read(http->serverfd, buffer, 4095);
+        bytes = read(http->serverfd, buffer, 4095);
         r->body->AppendString(r->body, (const char *)&buffer);
     }
 

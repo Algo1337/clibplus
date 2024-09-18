@@ -388,22 +388,27 @@ long __ToLowercase(str *s) {
 }
 
 long __ReplaceChar(str *s, const char ch, const char r) {
-    char *new = (char *)alloc(strlen(s->data) + 1);
-    int i = 0;
+    char *new_str = (char *)alloc(strlen(s->data) + 1);
+    new_str[0] = '\0';
+
+    int i = 0, j = 0;
     while(i < s->idx) {
         if(s->data[i] == ch) {
-            strncat(new, &r, sizeof(char));
-            i++;
-            continue;
+            new_str[j++] = r;
+        } else {
+            new_str[j++] = s->data[i];
         }
-
-        strncat(new, &s->data[i], sizeof(char));
         i++;
     }
 
+    new_str[j] = '\0';
+
     free(s->data);
-    s->data = strdup(new);
+    s->data = strdup(new_str);
     s->idx = strlen(s->data) + 1;
+
+    free(new_str);
+    return 0; 
 }
 
 long __ReplaceCharWithStr(str *s, const char ch, const char *r) {
@@ -460,11 +465,11 @@ char **__Split(str *s, const char *delim) {
         strcpy(arr[i], token);
         token = strtok(NULL, delim);
         i++;
-        arr = (char **)realloc(arr, (sizeof(char *) * i) + 1);
+        arr = (char **)realloc(arr, sizeof(char *) * (i + 1));
     }
+    i++;
+    arr = (char **)realloc(arr, (sizeof(char *) * i) + 1);
     arr[i] = NULL;
-
-    
 
     return arr;
 }

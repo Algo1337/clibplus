@@ -166,6 +166,9 @@ Map *decode_json(const char *data) {
         }
 
         char **args = (char **)line->Split(line, ":");
+        if(count_arr(args) < 2)
+            continue;
+
         Arr *a = Array(args);
 
         if(a->idx == 2)

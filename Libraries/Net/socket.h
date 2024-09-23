@@ -6,9 +6,17 @@
 #include <clib/String/str.h>
 
 #include <unistd.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/socket.h>
+
+// #ifdef WIN32
+//     #include <winsock2.h>
+//     #include <ws2tcpip.h>
+//     #pragma comment(lib, "Ws2_32.lib")
+// #else
+//     #include <sys/socket.h>
+// #endif
 
 typedef enum SocketHostname_T {
     IPv4    = 8429930,

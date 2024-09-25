@@ -2,7 +2,7 @@
 
 DIR = '/root/bot/headers/'
 
-all: install cp build do_test bot_files
+all: install build cp
 
 bot_files:
 	cp Libraries/*.h $(DIR)

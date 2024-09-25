@@ -23,16 +23,25 @@ Thread *new_thread(void *fn, void **args, void **ret_var) {
 }
 
 void ExecuteMethod(Thread *t) {
+    if(!t || t->running == 1)
+        return;
+
     t->running = 1;
     pthread_create(&t->ptid, NULL, (void *)t->fn, (void *)t->args);
 }
 
 void WaitThread(Thread *t) {
+    if(!t || t->running != 1)
+        return;
+
     t->running = 0;
     (void)(t->return_var == NULL ? pthread_join(t->ptid, NULL) : pthread_join(t->ptid, t->return_var));
 }
 
 void ExitThread(Thread *t) {
+    if(!t || t->running != 1)
+        return;
+
     t->running = 0;
     pthread_cancel(t->ptid);
 }

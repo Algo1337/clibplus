@@ -43,9 +43,11 @@ To avoid re-inventing the wheels for future projects and to attract more develop
 <p>✅ = Completed<br />🛠️ = Being Worked On<br />⚠️ = Needs Work</p>
 
 ```
-✅⚠️    String Lib ( Could Use More Higher-Level Methods that abstract Lower-Level string Operations )
-✅⚠️    Array Lib ( Could use more Higher-Level Methods similar to higher-level language(s) array module(s) )
-✅⚠️    Map Lib
+✅⚠️    String Lib ( Could use improvements )
+✅⚠️    Array Lib ( Could use improvements )
+✅⚠️    Map Lib ( Could use improvements )
+🛠️⚠️    Thread Lib 
+🛠️⚠️    Garbage Collector Lib
 🛠️⚠️    Request Lib
 🛠️⚠️    Web Server Lib
 ```
